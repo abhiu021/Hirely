@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
+const cvRoutes = require('./routes/cvRoutes');
 
 const app = express();
 
@@ -20,6 +21,8 @@ mongoose.connect(process.env.MONGO_URI, {
 app.get('/', (req, res) => {
   res.send('Welcome to the MERN Stack Backend!');
 });
+
+app.use('/api/cv', cvRoutes);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
