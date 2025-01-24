@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const CreateResume = () => {
+const CreateCV = () => {
   const [domain, setDomain] = useState("");
   const [company, setCompany] = useState("");
   const [jobDescription, setJobDescription] = useState("");
@@ -9,6 +9,10 @@ const CreateResume = () => {
   const [projects, setProjects] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
   const [atsScore, setAtsScore] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [analysisResults, setAnalysisResults] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -16,6 +20,9 @@ const CreateResume = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setUploadProgress(0);
 
     const formData = new FormData();
     formData.append("file", file);
@@ -29,13 +36,23 @@ const CreateResume = () => {
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
+          onUploadProgress: (progressEvent) => {
+            const percent = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            setUploadProgress(percent);
+          },
         }
       );
+      setAnalysisResults(response.data);
       setProjects(response.data.extractedProjects);
       setSuggestions(response.data.suggestions);
       setAtsScore(response.data.atsScore);
     } catch (err) {
+      setError(err.response?.data?.error || 'Upload failed');
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -91,16 +108,77 @@ const CreateResume = () => {
               />
               <button
                 type="submit"
-                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+                disabled={loading}
+                className={`bg-blue-500 text-white py-2 px-4 rounded ${
+                  loading ? 'opacity-50' : 'hover:bg-blue-600'
+                }`}
               >
-                Analyze CV
+                {loading ? 'Analyzing...' : 'Analyze CV'}
               </button>
+              {error && <p className="text-red-500 mt-2">{error}</p>}
             </form>
           </div>
         </div>
       </div>
+
+      {/* Progress Bar */}
+      {loading && (
+        <div className="w-full bg-gray-200 rounded h-2 mt-4">
+          <div 
+            className="bg-blue-600 h-2 rounded" 
+            style={{ width: `${uploadProgress}%` }}
+          />
+        </div>
+      )}
+
+      {/* Analysis Results */}
+      {analysisResults && (
+        <div className="mt-8 p-6 bg-white rounded-lg shadow">
+          <h3 className="text-xl font-bold mb-4">Analysis Results</h3>
+          
+          {/* ATS Score */}
+          <div className="mb-6">
+            <h4 className="font-semibold mb-2">ATS Score</h4>
+            <div className="flex items-center">
+              <div className="w-full bg-gray-200 rounded h-4">
+                <div 
+                  className={`h-4 rounded ${
+                    analysisResults.atsScore > 70 ? 'bg-green-500' : 
+                    analysisResults.atsScore > 40 ? 'bg-yellow-500' : 'bg-red-500'
+                  }`}
+                  style={{ width: `${analysisResults.atsScore}%` }}
+                />
+              </div>
+              <span className="ml-4 font-bold">{analysisResults.atsScore}%</span>
+            </div>
+          </div>
+
+          {/* Suggestions */}
+          <div className="mb-6">
+            <h4 className="font-semibold mb-2">Suggestions</h4>
+            <ul className="list-disc pl-5">
+              {analysisResults.suggestions.map((suggestion, index) => (
+                <li key={index} className="text-gray-700 mb-2">{suggestion}</li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Extracted Projects */}
+          <div>
+            <h4 className="font-semibold mb-2">Extracted Projects</h4>
+            <div className="grid gap-4">
+              {analysisResults.extractedProjects.map((project, index) => (
+                <div key={index} className="p-4 bg-gray-50 rounded">
+                  <h5 className="font-medium">{project.title}</h5>
+                  <p className="text-gray-600">{project.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default CreateResume;
+export default CreateCV;

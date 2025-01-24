@@ -1,37 +1,64 @@
 const express = require('express');
+const multer = require('multer');
 const CV = require('../models/CV');
 const router = express.Router();
 
-// Create new CV
-router.post('/create', async (req, res) => {
-  try {
-    const cv = new CV(req.body);
-    await cv.save();
-    res.status(201).json(cv);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+// Configure multer
+const storage = multer.diskStorage({
+  destination: './uploads/',
+  filename: function(req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
   }
 });
 
-// Update existing CV
-router.put('/update/:id', async (req, res) => {
-  try {
-    const cv = await CV.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(cv);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+const upload = multer({ storage: storage });
 
-// Get suggestions for CV analysis
-router.post('/analyze', (req, res) => {
-  const { domain, company } = req.body;
-  // Dummy suggestions logic
-  const suggestions = [
-    `Focus on ${domain} skills.`,
-    `Include more information about ${company}.`,
-  ];
-  res.json({ suggestions });
+// Analyze CV endpoint
+router.post('/analyze', upload.single('file'), async (req, res) => {
+  try {
+    const { domain, company, jobDescription } = req.body;
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    // Mock ATS analysis (replace with actual analysis logic)
+    const atsScore = Math.floor(Math.random() * 100);
+    const extractedProjects = [
+      { title: "Project 1", description: "Description 1" },
+      { title: "Project 2", description: "Description 2" }
+    ];
+    const suggestions = [
+      `Add more ${domain} specific keywords`,
+      `Include experience with ${company} technologies`,
+      'Quantify achievements'
+    ];
+
+    // Save to database
+    const newCV = new CV({
+      domain,
+      company,
+      jdReference: jobDescription,
+      filePath: file.path,
+      score: atsScore,
+      suggestions
+    });
+
+    await newCV.save();
+
+    res.json({
+      success: true,
+      atsScore,
+      extractedProjects,
+      suggestions,
+      cvId: newCV._id
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 module.exports = router;
