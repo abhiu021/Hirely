@@ -1,13 +1,33 @@
 const mongoose = require('mongoose');
 
 const cvSchema = new mongoose.Schema({
-  userId: String,
-  domain: String,
-  company: String,
-  jdReference: String,
-  template: String,
-  score: Number,
-  suggestions: Array,
+  domain: {
+    type: String,
+    required: true
+  },
+  company: {
+    type: String,
+    required: true
+  },
+  jdReference: {
+    type: String,
+    required: true
+  },
+  filePath: {
+    type: String,
+    required: true
+  },
+  score: {
+    type: Number,
+    required: true
+  },
+  suggestions: [{
+    type: String
+  }],
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
 });
 
 module.exports = mongoose.model('CV', cvSchema);

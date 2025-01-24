@@ -1,7 +1,10 @@
 // src/components/Home.jsx
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-gradient-to-b from-blue-900 to-blue-300 text-center text-white py-20">
       <div className="container mx-auto px-6">
@@ -15,13 +18,19 @@ const Home = () => {
         </h1>
         <p className="mb-12">All you have to do is JobReady</p>
         <div className="flex justify-center space-x-8">
-          <button className="bg-white text-blue-900 py-4 px-8 rounded-lg shadow-md hover:bg-gray-200">
+          <button 
+            onClick={() => navigate('/create-cv')}
+            className="bg-white text-blue-900 py-4 px-8 rounded-lg shadow-md hover:bg-gray-200"
+          >
             <div className="flex items-center space-x-2">
               <span className="text-2xl">+</span>
               <span>Build a new Resume</span>
             </div>
           </button>
-          <button className="bg-white text-blue-900 py-4 px-8 rounded-lg shadow-md hover:bg-gray-200">
+          <button 
+            onClick={() => navigate('/update-cv')}
+            className="bg-white text-blue-900 py-4 px-8 rounded-lg shadow-md hover:bg-gray-200"
+          >
             <div className="flex items-center space-x-2">
               <span className="text-2xl">✏️</span>
               <span>Edit your old Resume</span>
