@@ -5,6 +5,8 @@ require('dotenv').config();
 const cvRoutes = require('./routes/cvRoutes');
 const path = require('path');
 const fs = require('fs');
+const skillsRoutes = require('./routes/skillsRoutes');
+const resumeRoutes = require('./routes/resumeRoutes'); // Add this
 
 const app = express();
 
@@ -30,7 +32,10 @@ app.get('/', (req, res) => {
   res.send('Welcome to the MERN Stack Backend!!');
 });
 
+// Routes
+app.use('/api/skills', skillsRoutes);
 app.use('/api/cv', cvRoutes);
+app.use('/api/resume', resumeRoutes); // Add this route
 
 // Start Server
 const PORT = process.env.PORT || 5000;
