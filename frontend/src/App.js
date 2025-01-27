@@ -10,6 +10,7 @@ import PersonalForm from "./components/resume/forms/PersonalForm";
 import ExperienceForm from "./components/resume/forms/ExperienceForm";
 import EducationForm from "./components/resume/forms/EducationForm";
 import SkillsForm from "./components/resume/forms/SkillsForm";
+import ResumePreview from "./components/resumePreview/ResumePreview";
 
 const App = () => {
   const isAuthenticated = true;
@@ -41,6 +42,7 @@ const App = () => {
             <Route path="experience" element={<ExperienceForm />} />
             <Route path="education" element={<EducationForm />} />
             <Route path="skills" element={<SkillsForm />} />
+            <Route path="preview" element={<ResumePreview />} />
           </Route>
 
           {/* 404 Route */}

@@ -48,6 +48,8 @@ const SkillsForm = () => {
         resumeId,
         skills
       });
+      localStorage.setItem('skills', JSON.stringify(skills));
+      localStorage.setItem('resumeId', resumeId);
       navigate('/resume/preview');
     } catch (error) {
       console.error('Error saving skills:', error);
