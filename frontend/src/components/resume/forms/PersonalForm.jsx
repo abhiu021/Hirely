@@ -5,13 +5,15 @@ import axios from 'axios';
 const PersonalForm = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  
-  // Initialize form data
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
-    phone: ''
+    phone: '',
+    address: '',
+    city: '',
+    state: '',
+    zip: ''
   });
 
   // Load saved data on component mount
@@ -26,9 +28,9 @@ const PersonalForm = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/api/resume/personal', formData);
+      const response = await axios.post('http://localhost:5000/api/personal', formData);
       localStorage.setItem('personalInfo', JSON.stringify(formData));
-      localStorage.setItem('resumeId', response.data.resumeId);
+      localStorage.setItem('resumeId', response.data._id);
       navigate('/resume/experience');
     } catch (error) {
       console.error('Error saving personal info:', error);
@@ -38,63 +40,74 @@ const PersonalForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-3xl mx-auto p-6">
-      <h2 className="text-2xl font-bold">Personal Information</h2>
-      <div className="grid grid-cols-2 gap-6">
+    <div className="p-8 max-w-screen-lg mx-auto">
+      <h1 className="text-3xl font-bold mb-8">Personal Information</h1>
+      <form onSubmit={handleSubmit}>
         <input
           type="text"
           placeholder="First Name"
           value={formData.firstName}
-          onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-          className="w-full p-2 border rounded-lg"
+          onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+          className="w-full p-2 border rounded-lg mb-2"
         />
         <input
           type="text"
           placeholder="Last Name"
           value={formData.lastName}
-          onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-          className="w-full p-2 border rounded-lg"
+          onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+          className="w-full p-2 border rounded-lg mb-2"
         />
-      </div>
-      <input
-        type="email"
-        placeholder="Email"
-        value={formData.email}
-        onChange={(e) => setFormData({...formData, email: e.target.value})}
-        className="w-full p-2 border rounded-lg"
-      />
-      <input
-        type="tel"
-        placeholder="Phone"
-        value={formData.phone}
-        onChange={(e) => setFormData({...formData, phone: e.target.value})}
-        className="w-full p-2 border rounded-lg"
-      />
-      
-      <div className="flex justify-between items-center mt-6 pt-6 border-t">
+        <input
+          type="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          className="w-full p-2 border rounded-lg mb-2"
+        />
+        <input
+          type="text"
+          placeholder="Phone"
+          value={formData.phone}
+          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+          className="w-full p-2 border rounded-lg mb-2"
+        />
+        <input
+          type="text"
+          placeholder="Address"
+          value={formData.address}
+          onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+          className="w-full p-2 border rounded-lg mb-2"
+        />
+        <input
+          type="text"
+          placeholder="City"
+          value={formData.city}
+          onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+          className="w-full p-2 border rounded-lg mb-2"
+        />
+        <input
+          type="text"
+          placeholder="State"
+          value={formData.state}
+          onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+          className="w-full p-2 border rounded-lg mb-2"
+        />
+        <input
+          type="text"
+          placeholder="Zip"
+          value={formData.zip}
+          onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
+          className="w-full p-2 border rounded-lg mb-2"
+        />
         <button
-          type="button"
-          onClick={() => navigate('/')}
-          className="px-6 py-2 text-gray-600 hover:text-gray-800"
+          type="submit"
+          className="bg-blue-500 text-white p-2 rounded"
+          disabled={loading}
         >
-          Back
+          {loading ? 'Saving...' : 'Save Personal Info'}
         </button>
-        
-        <div className="space-x-4">
-          <button
-            type="submit"
-            disabled={loading}
-            className={`px-6 py-2 rounded-lg ${
-              loading 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-blue-600 hover:bg-blue-700'
-            } text-white transition-colors`}
-          >
-            {loading ? 'Saving...' : 'Save & Continue'}
-          </button>
-        </div>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 };
 

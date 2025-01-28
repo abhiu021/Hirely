@@ -1,36 +1,43 @@
 const express = require('express');
-const router = express.Router();
 const Skill = require('../models/Skill');
+const router = express.Router();
 
-// Get all skills
+// Create new skill endpoint
+router.post('/', async (req, res) => {
+  try {
+    const { name } = req.body;
+    const newSkill = new Skill({ name });
+    const savedSkill = await newSkill.save();
+    console.log('New skill saved:', savedSkill); // Add logging here
+    res.status(201).json(savedSkill);
+  } catch (error) {
+    console.error('Error saving new skill:', error);
+    res.status(500).json({ error: 'Failed to create new skill' });
+  }
+});
+
+// Fetch all skills endpoint
 router.get('/', async (req, res) => {
   try {
     const skills = await Skill.find();
     res.json(skills);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching skills', error });
+    console.error('Error fetching skills:', error);
+    res.status(500).json({ error: 'Failed to fetch skills' });
   }
 });
 
-// Add a new skill
-router.post('/', async (req, res) => {
-  try {
-    const { skill } = req.body;
-    const newSkill = new Skill({ skill });
-    const savedSkill = await newSkill.save();
-    res.status(201).json(savedSkill);
-  } catch (error) {
-    res.status(500).json({ message: 'Error saving skill', error });
-  }
-});
-
-// Delete a skill
+// Delete skill by ID endpoint
 router.delete('/:id', async (req, res) => {
   try {
-    await Skill.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: 'Skill deleted' });
+    const deletedSkill = await Skill.findByIdAndDelete(req.params.id);
+    if (!deletedSkill) {
+      return res.status(404).json({ error: 'Skill not found' });
+    }
+    res.json({ message: 'Skill deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting skill', error });
+    console.error('Error deleting skill:', error);
+    res.status(500).json({ error: 'Failed to delete skill' });
   }
 });
 

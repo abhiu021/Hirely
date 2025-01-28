@@ -19,113 +19,101 @@ const SkillsForm = () => {
   const handleAddSkill = async (e) => {
     e.preventDefault();
     if (!newSkill.trim()) return;
-    
+
     setLoading(true);
     try {
-      const updatedSkills = [...skills, newSkill];
-      setSkills(updatedSkills);
-      localStorage.setItem('skills', JSON.stringify(updatedSkills));
+      const response = await axios.post('http://localhost:5000/api/skills', { name: newSkill });
+      console.log('Skill saved:', response.data); // Add logging here
+      setSkills([...skills, response.data]);
       setNewSkill('');
+      localStorage.setItem('skills', JSON.stringify([...skills, response.data]));
     } catch (error) {
-      console.error('Error adding skill:', error);
+      console.error('Error saving skill:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRemoveSkill = (index) => {
-    const updatedSkills = skills.filter((_, i) => i !== index);
-    setSkills(updatedSkills);
-    localStorage.setItem('skills', JSON.stringify(updatedSkills));
+  const handleRemoveSkill = async (id) => {
+    setLoading(true);
+    try {
+      await axios.delete(`http://localhost:5000/api/skills/${id}`);
+      const updatedSkills = skills.filter(skill => skill._id !== id);
+      setSkills(updatedSkills);
+      localStorage.setItem('skills', JSON.stringify(updatedSkills));
+    } catch (error) {
+      console.error('Error deleting skill:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const resumeId = localStorage.getItem('resumeId');
-      await axios.post('http://localhost:5000/api/resume/skills', {
-        resumeId,
-        skills
-      });
-      localStorage.setItem('skills', JSON.stringify(skills));
-      localStorage.setItem('resumeId', resumeId);
-      navigate('/resume/preview');
+      // Ensure all skills are saved before navigating
+      const savedSkills = await Promise.all(skills.map(async (skill) => {
+        if (!skill._id) {
+          const response = await axios.post('http://localhost:5000/api/skills', { name: skill.name });
+          return response.data;
+        }
+        return skill;
+      }));
+      setSkills(savedSkills);
+      localStorage.setItem('skills', JSON.stringify(savedSkills));
+      navigate('/resume/preview'); // Navigate to the Preview page
     } catch (error) {
       console.error('Error saving skills:', error);
-      alert('Failed to save skills. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-6">Skills</h2>
-      
-      {/* Add Skill Form */}
-      <div className="flex gap-4 mb-6">
-        <input
-          type="text"
-          value={newSkill}
-          onChange={(e) => setNewSkill(e.target.value)}
-          placeholder="Enter a skill"
-          className="flex-1 p-2 border rounded-lg"
-        />
-        <button
-          onClick={handleAddSkill}
-          disabled={loading || !newSkill.trim()}
-          className={`px-6 py-2 rounded-lg ${
-            loading || !newSkill.trim()
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700'
-          } text-white transition-colors`}
-        >
-          {loading ? 'Adding...' : 'Add Skill'}
-        </button>
-      </div>
-
-      {/* Skills List */}
-      <div className="space-y-2 mb-8">
-        {skills.map((skill, index) => (
-          <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-            <span>{skill.skill || skill}</span>
-            <button
-              onClick={() => handleRemoveSkill(index)}
-              disabled={loading}
-              className={`text-red-600 hover:text-red-700 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              <FaTrash className="mr-2" />
-              Delete
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {/* Form Controls */}
-      <div className="flex justify-between pt-6 border-t">
-        <button
-          type="button"
-          onClick={() => navigate('/resume/education')}
-          className="px-6 py-2 text-gray-600 hover:text-gray-800"
-        >
-          Back
-        </button>
-        <div className="space-x-4">
+    <div className="p-8 max-w-screen-lg mx-auto">
+      <h1 className="text-3xl font-bold mb-8">Skills</h1>
+      <form onSubmit={handleSubmit}>
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="New Skill"
+            value={newSkill}
+            onChange={(e) => setNewSkill(e.target.value)}
+            className="w-full p-2 border rounded-lg mb-2"
+          />
           <button
-            type="submit"
-            onClick={handleSubmit}
+            type="button"
+            onClick={handleAddSkill}
+            className="text-blue-600 hover:text-blue-700 flex items-center mb-4"
             disabled={loading}
-            className={`px-6 py-2 rounded-lg ${
-              loading
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-blue-600 hover:bg-blue-700'
-            } text-white transition-colors`}
           >
-            {loading ? 'Saving...' : 'Save & Continue'}
+            <FaPlus className="mr-2" /> Add Skill
           </button>
         </div>
-      </div>
+        <ul>
+          {skills.map((skill) => (
+            <li key={skill._id || skill.name} className="flex justify-between items-center mb-2">
+              <span>{skill.name}</span>
+              <button
+                type="button"
+                onClick={() => handleRemoveSkill(skill._id)}
+                className="text-red-600 hover:text-red-700 flex items-center"
+                disabled={loading}
+              >
+                <FaTrash className="mr-2" /> Remove
+              </button>
+            </li>
+          ))}
+        </ul>
+        <button
+          type="submit"
+          className="bg-blue-500 text-white p-2 rounded"
+          disabled={loading}
+        >
+          {loading ? 'Saving...' : 'Save Skills'}
+        </button>
+      </form>
     </div>
   );
 };

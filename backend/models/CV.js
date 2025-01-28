@@ -9,25 +9,20 @@ const cvSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  jdReference: {
+  jobDescription: {
     type: String,
     required: true
   },
-  filePath: {
-    type: String,
-    required: true
-  },
-  score: {
-    type: Number,
-    required: true
-  },
-  suggestions: [{
-    type: String
-  }],
   createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
     type: Date,
     default: Date.now
   }
 });
 
-module.exports = mongoose.model('CV', cvSchema);
+const CV = mongoose.model('CV', cvSchema);
+
+module.exports = CV;

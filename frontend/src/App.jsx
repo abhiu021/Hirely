@@ -1,22 +1,22 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Navbar from './components/navigation/Navbar';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Home from './components/Home';
-import Layout from './components/resume/Layout';
-import Dashboard from './components/dashboard/Dashboard';
-import { LoginForm, SignupForm } from './components/auth/AuthForms';
-import TemplateGallery from './components/templates/TemplateGallery';
+import TemplateGallery from './components/TemplateGallery';
+import LoginForm from './components/LoginForm';
+import SignupForm from './components/SignupForm';
+import Dashboard from './components/Dashboard';
+import ProtectedRoute from './components/ProtectedRoute';
+import Layout from './components/Layout';
 import PersonalForm from './components/resume/forms/PersonalForm';
 import ExperienceForm from './components/resume/forms/ExperienceForm';
 import EducationForm from './components/resume/forms/EducationForm';
 import SkillsForm from './components/resume/forms/SkillsForm';
-import ProtectedRoute from './components/auth/ProtectedRoute';
+import Preview from './components/resume/Preview';
 
-function App() {
+const App = () => {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50">
-        <Navbar />
+      <div>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/templates" element={<TemplateGallery />} />
@@ -39,11 +39,12 @@ function App() {
             <Route path="experience" element={<ExperienceForm />} />
             <Route path="education" element={<EducationForm />} />
             <Route path="skills" element={<SkillsForm />} />
+            <Route path="preview" element={<Preview />} />
           </Route>
         </Routes>
       </div>
     </Router>
   );
-}
+};
 
 export default App;
