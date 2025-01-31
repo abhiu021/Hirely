@@ -1,155 +1,172 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const ExperienceForm = () => {
   const navigate = useNavigate();
-  const [experiences, setExperiences] = useState([{
+  const [experiences, setExperiences] = useState([]);
+  const [newExperience, setNewExperience] = useState({
     title: '',
     company: '',
     description: '',
     startDate: '',
     endDate: '',
     currentlyWorking: false
-  }]);
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const addExperience = () => {
-    setExperiences([...experiences, {
-      title: '',
-      company: '',
-      description: '',
-      startDate: '',
-      endDate: '',
-      currentlyWorking: false
-    }]);
-  };
-
-  const removeExperience = (index) => {
-    const newExperiences = [...experiences];
-    newExperiences.splice(index, 1);
-    setExperiences(newExperiences);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      for (const experience of experiences) {
-        if (!experience.title || !experience.company || !experience.description || !experience.startDate) {
-          alert('Please fill in all required fields');
-          return;
+  useEffect(() => {
+    const fetchExperiences = async () => {
+      try {
+        const resumeId = localStorage.getItem('resumeId');
+        if (resumeId) {
+          const response = await axios.get(`http://localhost:5000/api/experience/${resumeId}`);
+          setExperiences(response.data);
+        } else {
+          setError('Resume ID not found');
         }
+      } catch (error) {
+        console.error('Error fetching experiences:', error);
+        setError('Error fetching experiences');
       }
-      const response = await axios.post('http://localhost:5000/api/experience', experiences);
-      console.log('Response received:', response.data); // Add logging here
-      navigate('/resume/education'); // Replace '/education-form' with the actual path to your education form
+    };
+
+    fetchExperiences();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setNewExperience((prevData) => ({
+      ...prevData,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleAddExperience = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const resumeId = localStorage.getItem('resumeId');
+      if (resumeId) {
+        const response = await axios.post(`http://localhost:5000/api/experience/${resumeId}`, newExperience);
+        setExperiences([...experiences, response.data]);
+        setNewExperience({
+          title: '',
+          company: '',
+          description: '',
+          startDate: '',
+          endDate: '',
+          currentlyWorking: false
+        });
+      } else {
+        setError('Resume ID not found');
+      }
     } catch (error) {
       console.error('Error saving experience:', error);
+      setError('Error saving experience');
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleNext = () => {
+    navigate('/resume/education');
   };
 
   return (
     <div className="p-8 max-w-screen-lg mx-auto">
-      <h1 className="text-3xl font-bold mb-8">Add Experience</h1>
-      <form onSubmit={handleSubmit}>
-        {experiences.map((exp, index) => (
-          <div key={index} className="mb-4">
+      <h1 className="text-3xl font-bold mb-8">Experience</h1>
+      <form onSubmit={handleAddExperience}>
+        <div className="mb-4">
+          <label className="block text-gray-700">Title</label>
+          <input
+            type="text"
+            name="title"
+            value={newExperience.title}
+            onChange={handleChange}
+            className="w-full p-2 border rounded-lg mb-2"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Company</label>
+          <input
+            type="text"
+            name="company"
+            value={newExperience.company}
+            onChange={handleChange}
+            className="w-full p-2 border rounded-lg mb-2"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Description</label>
+          <textarea
+            name="description"
+            value={newExperience.description}
+            onChange={handleChange}
+            className="w-full p-2 border rounded-lg mb-2"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Start Date</label>
+          <input
+            type="date"
+            name="startDate"
+            value={newExperience.startDate}
+            onChange={handleChange}
+            className="w-full p-2 border rounded-lg mb-2"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">End Date</label>
+          <input
+            type="date"
+            name="endDate"
+            value={newExperience.endDate}
+            onChange={handleChange}
+            className="w-full p-2 border rounded-lg mb-2"
+            disabled={newExperience.currentlyWorking}
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">
             <input
-              type="text"
-              placeholder="Title"
-              value={exp.title}
-              onChange={(e) => {
-                const newExp = [...experiences];
-                newExp[index].title = e.target.value;
-                setExperiences(newExp);
-              }}
-              className="w-full p-2 border rounded-lg mb-2"
-              required
+              type="checkbox"
+              name="currentlyWorking"
+              checked={newExperience.currentlyWorking}
+              onChange={handleChange}
+              className="mr-2"
             />
-            <input
-              type="text"
-              placeholder="Company"
-              value={exp.company}
-              onChange={(e) => {
-                const newExp = [...experiences];
-                newExp[index].company = e.target.value;
-                setExperiences(newExp);
-              }}
-              className="w-full p-2 border rounded-lg mb-2"
-              required
-            />
-            <input
-              type="date"
-              placeholder="Start Date"
-              value={exp.startDate}
-              onChange={(e) => {
-                const newExp = [...experiences];
-                newExp[index].startDate = e.target.value;
-                setExperiences(newExp);
-              }}
-              className="w-full p-2 border rounded-lg mb-2"
-              required
-            />
-            <input
-              type="date"
-              placeholder="End Date"
-              value={exp.endDate}
-              onChange={(e) => {
-                const newExp = [...experiences];
-                newExp[index].endDate = e.target.value;
-                setExperiences(newExp);
-              }}
-              className="w-full p-2 border rounded-lg mb-2"
-            />
-            <div className="flex items-center mb-4">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={exp.currentlyWorking}
-                  onChange={(e) => {
-                    const newExp = [...experiences];
-                    newExp[index].currentlyWorking = e.target.checked;
-                    setExperiences(newExp);
-                  }}
-                  className="mr-2"
-                />
-                <span>I currently work here</span>
-              </label>
-            </div>
-            <textarea
-              placeholder="Description"
-              value={exp.description}
-              onChange={(e) => {
-                const newExp = [...experiences];
-                newExp[index].description = e.target.value;
-                setExperiences(newExp);
-              }}
-              className="w-full p-2 border rounded-lg mb-4"
-              rows="4"
-              required
-            />
-            <button
-              type="button"
-              onClick={() => removeExperience(index)}
-              className="text-red-600 hover:text-red-700 flex items-center"
-            >
-              Remove
-            </button>
-          </div>
-        ))}
-        <button
-          type="button"
-          onClick={addExperience}
-          className="text-blue-600 hover:text-blue-700 flex items-center mb-4"
-        >
-          Add Experience
-        </button>
+            Currently Working
+          </label>
+        </div>
         <button
           type="submit"
           className="bg-blue-500 text-white p-2 rounded"
+          disabled={loading}
         >
-          Save Experience
+          {loading ? 'Saving...' : 'Add Experience'}
         </button>
+        {error && <p className="text-red-500 mt-4">{error}</p>}
       </form>
+      <ul>
+        {experiences.map((experience) => (
+          <li key={experience._id}>
+            <p><strong>Title:</strong> {experience.title}</p>
+            <p><strong>Company:</strong> {experience.company}</p>
+            <p><strong>Description:</strong> {experience.description}</p>
+            <p><strong>Start Date:</strong> {experience.startDate}</p>
+            <p><strong>End Date:</strong> {experience.endDate}</p>
+            <p><strong>Currently Working:</strong> {experience.currentlyWorking ? 'Yes' : 'No'}</p>
+          </li>
+        ))}
+      </ul>
+      <button
+        onClick={handleNext}
+        className="bg-blue-500 text-white p-2 rounded mt-4"
+      >
+        Next
+      </button>
     </div>
   );
 };

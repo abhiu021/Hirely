@@ -1,155 +1,164 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const EducationForm = () => {
   const navigate = useNavigate();
-  const [educations, setEducations] = useState([{
+  const [educations, setEducations] = useState([]);
+  const [newEducation, setNewEducation] = useState({
     school: '',
     degree: '',
     fieldOfStudy: '',
     startDate: '',
     endDate: '',
     currentlyStudying: false
-  }]);
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const addEducation = () => {
-    setEducations([...educations, {
-      school: '',
-      degree: '',
-      fieldOfStudy: '',
-      startDate: '',
-      endDate: '',
-      currentlyStudying: false
-    }]);
-  };
+  useEffect(() => {
+    const fetchEducations = async () => {
+      try {
+        const resumeId = localStorage.getItem('resumeId');
+        if (resumeId) {
+          const response = await axios.get(`http://localhost:5000/api/education/${resumeId}`);
+          setEducations(response.data);
+        } else {
+          setError('Resume ID not found');
+        }
+      } catch (error) {
+        console.error('Error fetching educations:', error);
+        setError('Error fetching educations');
+      }
+    };
 
-  const removeEducation = (index) => {
-    const newEducations = [...educations];
-    newEducations.splice(index, 1);
-    setEducations(newEducations);
+    fetchEducations();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setNewEducation((prevData) => ({
+      ...prevData,
+      [name]: type === 'checkbox' ? checked : value
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      for (const education of educations) {
-        if (!education.school || !education.degree || !education.fieldOfStudy || !education.startDate) {
-          alert('Please fill in all required fields');
-          return;
-        }
+      const resumeId = localStorage.getItem('resumeId');
+      if (resumeId) {
+        const response = await axios.post(`http://localhost:5000/api/education/${resumeId}`, newEducation);
+        setEducations([...educations, response.data]);
+        setNewEducation({
+          school: '',
+          degree: '',
+          fieldOfStudy: '',
+          startDate: '',
+          endDate: '',
+          currentlyStudying: false
+        });
+        navigate('/resume/skills');
+      } else {
+        setError('Resume ID not found');
       }
-      const response = await axios.post('http://localhost:5000/api/education', educations);
-      console.log('Response received:', response.data); // Add logging here
-      navigate('/resume/skills'); // Navigate to the skills form
     } catch (error) {
       console.error('Error saving education:', error);
+      setError('Error saving education');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="p-8 max-w-screen-lg mx-auto">
-      <h1 className="text-3xl font-bold mb-8">Add Education</h1>
+      <h1 className="text-3xl font-bold mb-8">Education</h1>
       <form onSubmit={handleSubmit}>
-        {educations.map((edu, index) => (
-          <div key={index} className="mb-4">
+        <div className="mb-4">
+          <label className="block text-gray-700">School</label>
+          <input
+            type="text"
+            name="school"
+            value={newEducation.school}
+            onChange={handleChange}
+            className="w-full p-2 border rounded-lg mb-2"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Degree</label>
+          <input
+            type="text"
+            name="degree"
+            value={newEducation.degree}
+            onChange={handleChange}
+            className="w-full p-2 border rounded-lg mb-2"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Field of Study</label>
+          <input
+            type="text"
+            name="fieldOfStudy"
+            value={newEducation.fieldOfStudy}
+            onChange={handleChange}
+            className="w-full p-2 border rounded-lg mb-2"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Start Date</label>
+          <input
+            type="date"
+            name="startDate"
+            value={newEducation.startDate}
+            onChange={handleChange}
+            className="w-full p-2 border rounded-lg mb-2"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">End Date</label>
+          <input
+            type="date"
+            name="endDate"
+            value={newEducation.endDate}
+            onChange={handleChange}
+            className="w-full p-2 border rounded-lg mb-2"
+            disabled={newEducation.currentlyStudying}
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">
             <input
-              type="text"
-              placeholder="School"
-              value={edu.school}
-              onChange={(e) => {
-                const newEdu = [...educations];
-                newEdu[index].school = e.target.value;
-                setEducations(newEdu);
-              }}
-              className="w-full p-2 border rounded-lg mb-2"
-              required
+              type="checkbox"
+              name="currentlyStudying"
+              checked={newEducation.currentlyStudying}
+              onChange={handleChange}
+              className="mr-2"
             />
-            <input
-              type="text"
-              placeholder="Degree"
-              value={edu.degree}
-              onChange={(e) => {
-                const newEdu = [...educations];
-                newEdu[index].degree = e.target.value;
-                setEducations(newEdu);
-              }}
-              className="w-full p-2 border rounded-lg mb-2"
-              required
-            />
-            <input
-              type="text"
-              placeholder="Field of Study"
-              value={edu.fieldOfStudy}
-              onChange={(e) => {
-                const newEdu = [...educations];
-                newEdu[index].fieldOfStudy = e.target.value;
-                setEducations(newEdu);
-              }}
-              className="w-full p-2 border rounded-lg mb-2"
-              required
-            />
-            <input
-              type="date"
-              placeholder="Start Date"
-              value={edu.startDate}
-              onChange={(e) => {
-                const newEdu = [...educations];
-                newEdu[index].startDate = e.target.value;
-                setEducations(newEdu);
-              }}
-              className="w-full p-2 border rounded-lg mb-2"
-              required
-            />
-            <input
-              type="date"
-              placeholder="End Date"
-              value={edu.endDate}
-              onChange={(e) => {
-                const newEdu = [...educations];
-                newEdu[index].endDate = e.target.value;
-                setEducations(newEdu);
-              }}
-              className="w-full p-2 border rounded-lg mb-2"
-            />
-            <div className="flex items-center mb-4">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={edu.currentlyStudying}
-                  onChange={(e) => {
-                    const newEdu = [...educations];
-                    newEdu[index].currentlyStudying = e.target.checked;
-                    setEducations(newEdu);
-                  }}
-                  className="mr-2"
-                />
-                <span>I am currently studying here</span>
-              </label>
-            </div>
-            <button
-              type="button"
-              onClick={() => removeEducation(index)}
-              className="text-red-600 hover:text-red-700 flex items-center"
-            >
-              Remove
-            </button>
-          </div>
-        ))}
-        <button
-          type="button"
-          onClick={addEducation}
-          className="text-blue-600 hover:text-blue-700 flex items-center mb-4"
-        >
-          Add Education
-        </button>
+            Currently Studying
+          </label>
+        </div>
         <button
           type="submit"
           className="bg-blue-500 text-white p-2 rounded"
+          disabled={loading}
         >
-          Save Education
+          {loading ? 'Saving...' : 'Next'}
         </button>
+        {error && <p className="text-red-500 mt-4">{error}</p>}
       </form>
+      <ul>
+        {educations.map((education) => (
+          <li key={education._id}>
+            <p><strong>School:</strong> {education.school}</p>
+            <p><strong>Degree:</strong> {education.degree}</p>
+            <p><strong>Field of Study:</strong> {education.fieldOfStudy}</p>
+            <p><strong>Start Date:</strong> {education.startDate}</p>
+            <p><strong>End Date:</strong> {education.endDate}</p>
+            <p><strong>Currently Studying:</strong> {education.currentlyStudying ? 'Yes' : 'No'}</p>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
