@@ -1,18 +1,107 @@
-const Resume = require('../models/Personal');
+import Resume from '../models/Resume.js';
 
-const savePersonalInfo = async (req, res) => {
+// Create a new resume
+export const createResume = async (req, res) => {
   try {
-    const resume = new Resume({
-      personal: req.body
+    const { title, resumeId, userEmail, userName } = req.body.data; // Extract from nested "data" object
+
+    // Validate input
+    if (!title || !resumeId || !userEmail || !userName) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Create a new resume
+    const newResume = new Resume({
+      title,
+      resumeId,
+      userEmail,
+      userName,
     });
-    
-    await resume.save();
-    res.status(201).json({ resumeId: resume._id });
+
+    // Save to database
+    await newResume.save();
+
+    // Return the created resume with documentId
+    res.status(201).json({
+      message: 'Resume created successfully',
+      data: {
+        documentId: newResume._id, // Return the MongoDB document ID
+      },
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error creating resume:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-module.exports = {
-  savePersonalInfo
+// Get all resumes for the authenticated user
+export const getUserResumes = async (req, res) => {
+  try {
+    // Get the authenticated user's email from Clerk
+    const userEmail = req.auth.user.emailAddresses[0].emailAddress;
+
+    // Find resumes by user email
+    const resumes = await Resume.find({ userEmail });
+
+    res.status(200).json(resumes);
+  } catch (error) {
+    console.error('Error fetching resumes:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Get a single resume by ID
+export const getResumeById = async (req, res) => {
+  try {
+    
+    const resume = await Resume.find();
+
+    if (!resume) {
+      return res.status(404).json({ message: 'Resume not found' });
+    }
+
+    res.status(200).json(resume);
+  } catch (error) {
+    console.error('Error fetching resume:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Update a resume
+export const updateResume = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    // Find and update the resume
+    const updatedResume = await Resume.findByIdAndUpdate(id, updateData, { new: true });
+
+    if (!updatedResume) {
+      return res.status(404).json({ message: 'Resume not found' });
+    }
+
+    res.status(200).json({ message: 'Resume updated successfully', resume: updatedResume });
+  } catch (error) {
+    console.error('Error updating resume:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Delete a resume
+export const deleteResume = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find and delete the resume
+    const deletedResume = await Resume.findByIdAndDelete(id);
+
+    if (!deletedResume) {
+      return res.status(404).json({ message: 'Resume not found' });
+    }
+
+    res.status(200).json({ message: 'Resume deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting resume:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };
