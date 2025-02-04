@@ -48,7 +48,7 @@ app.use(express.json());
 
 // Routes
 
-app.use('/api/dashboard', requireAuth(), resumeRoutes);
+app.use('/api/dashboard/', requireAuth(), resumeRoutes);
 
 
 

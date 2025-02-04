@@ -3,10 +3,12 @@ import Resume from '../models/Resume.js';
 // Create a new resume
 export const createResume = async (req, res) => {
   try {
+    console.log('Request data:', req.body); // Log the request data
     const { title, resumeId, userEmail, userName } = req.body.data; // Extract from nested "data" object
 
     // Validate input
     if (!title || !resumeId || !userEmail || !userName) {
+      console.log('All fields are required');
       return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -70,7 +72,8 @@ export const getResumeById = async (req, res) => {
 // Update a resume
 export const updateResume = async (req, res) => {
   try {
-    const { id } = req.params;
+    console.log('hi') // Log the request data
+    const id= params.resumeId;
     const updateData = req.body;
 
     // Find and update the resume
