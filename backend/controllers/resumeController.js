@@ -72,12 +72,27 @@ export const getResumeById = async (req, res) => {
 // Update a resume
 export const updateResume = async (req, res) => {
   try {
-    console.log('hi') // Log the request data
-    const id= params.resumeId;
-    const updateData = req.body;
+    console.log('hi'); // Log the request data
+    const id = req.params; // Get the resume ID from the request parameters
+    const updateData = req.body.data; // Get the update data from the request body
+    console.log('Request data:', updateData); // Log the request data
+    console.log('Resume ID:', id); // Log the resume ID
+
+    // Validate the resumeId if necessary
+    if (!id) {
+      return res.status(400).json({ message: 'Resume ID is required' });
+    }
+
+    if(!updateData){
+      return res.status(400).json({ message: 'Update data is required' });
+    }
 
     // Find and update the resume
-    const updatedResume = await Resume.findByIdAndUpdate(id, updateData, { new: true });
+    const updatedResume = await Resume.findByIdAndUpdate(
+      id, // Use the correct method
+      { $set: updateData }, // Use $set to update only the fields provided
+      { new: true } // Return the updated document and run validators
+    );
 
     if (!updatedResume) {
       return res.status(404).json({ message: 'Resume not found' });

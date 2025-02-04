@@ -5,10 +5,12 @@ import cors from 'cors';
 import { requireAuth } from '@clerk/express'; // Corrected Clerk middleware import
 import connectDB from './db/connectDB.js';
 import resumeRoutes from './routes/resumeRoutes.js';
+import bodyParser from 'body-parser';
 
 dotenv.config();
 
 const app=express();
+app.use(bodyParser.json());
 
 // Middleware
 app.use(cors());

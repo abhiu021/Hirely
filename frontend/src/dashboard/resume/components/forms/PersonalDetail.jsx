@@ -1,21 +1,42 @@
+// components/PersonalDetail.js
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ResumeInfoContext } from '@/context/ResumeInfoContext';
 import { LoaderCircle } from 'lucide-react';
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useUser, useAuth } from '@clerk/clerk-react';
 import axios from 'axios'; // Import Axios
 import { toast } from 'sonner';
 
 function PersonalDetail({ enabledNext }) {
     const params = useParams();
+    const { getToken } = useAuth(); 
     const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
 
-    const [formData, setFormData] = useState({});
+    const [formData, setFormData] = useState({
+        "personalDetails":{firstName: '',
+        lastName: '',
+        jobTitle: '',
+        address: '',
+        phone: '',
+        email: '',}
+    });
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        console.log("---", resumeInfo);
+        // Initialize form data with resumeInfo if available
+        if (resumeInfo) {
+            setFormData({
+                "personalDetails":{
+                firstName: resumeInfo.firstName || '',
+                lastName: resumeInfo.lastName || '',
+                jobTitle: resumeInfo.jobTitle || '',
+                address: resumeInfo.address || '',
+                phone: resumeInfo.phone || '',
+                email: resumeInfo.email || '',}
+            });
+        }
     }, [resumeInfo]);
 
     const handleInputChange = (e) => {
@@ -37,14 +58,20 @@ function PersonalDetail({ enabledNext }) {
         e.preventDefault();
         setLoading(true);
         const data = {
-            data: formData,
+            data: formData, // Ensure formData contains the correct fields
         };
-
+    
         try {
-            console.log("id");
-            const id = params.resumeId;
+            const id = params?.resumeId;
+            const token = await getToken();
+            console.log('Request data:', data);
             console.log(id);
-            const response = await axios.put(`http://localhost:5000/api/dashboard/resume/${id}/edit`, data);
+            const response = await axios.put(`http://localhost:5000/api/dashboard/resume/${id}/edit`, data, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             console.log(response);
             enabledNext(true);
             toast("Details updated");
@@ -65,27 +92,27 @@ function PersonalDetail({ enabledNext }) {
                 <div className='grid grid-cols-2 mt-5 gap-3'>
                     <div>
                         <label className='text-sm'>First Name</label>
-                        <Input name="firstName" defaultValue={resumeInfo?.firstName} required onChange={handleInputChange} />
+                        <Input name="firstName" value={formData.firstName} required onChange={handleInputChange} />
                     </div>
                     <div>
                         <label className='text-sm'>Last Name</label>
-                        <Input name="lastName" required onChange={handleInputChange} defaultValue={resumeInfo?.lastName} />
+                        <Input name="lastName" required onChange={handleInputChange} value={formData.lastName} />
                     </div>
                     <div className='col-span-2'>
                         <label className='text-sm'>Job Title</label>
-                        <Input name="jobTitle" required defaultValue={resumeInfo?.jobTitle} onChange={handleInputChange} />
+                        <Input name="jobTitle" required value={formData.jobTitle} onChange={handleInputChange} />
                     </div>
                     <div className='col-span-2'>
                         <label className='text-sm'>Address</label>
-                        <Input name="address" required defaultValue={resumeInfo?.address} onChange={handleInputChange} />
+                        <Input name="address" required value={formData.address} onChange={handleInputChange} />
                     </div>
                     <div>
                         <label className='text-sm'>Phone</label>
-                        <Input name="phone" required defaultValue={resumeInfo?.phone} onChange={handleInputChange} />
+                        <Input name="phone" required value={formData.phone} onChange={handleInputChange} />
                     </div>
                     <div>
                         <label className='text-sm'>Email</label>
-                        <Input name="email" required defaultValue={resumeInfo?.email} onChange={handleInputChange} />
+                        <Input name="email" required value={formData.email} onChange={handleInputChange} />
                     </div>
                 </div>
                 <div className='mt-3 flex justify-end'>
