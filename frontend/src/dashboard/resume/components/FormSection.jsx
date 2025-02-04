@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import PersonalDetail from './forms/PersonalDetail'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, ArrowRight, Home, LayoutGrid } from 'lucide-react'
-// import Summery from './forms/Summery';
+import Summery from './forms/Summery';
 // import Experience from './forms/Experience';
 // import Education from './forms/Education';
 // import Skills from './forms/Skills';
@@ -36,21 +36,21 @@ function FormSection() {
           </div>
         </div>
         {/* Personal Detail  */}
-        {/* {activeFormIndex==1?   */}
+        {activeFormIndex==1?  
         <PersonalDetail enabledNext={(v)=>setEnableNext(v)} />
-        {/* :activeFormIndex==2?
+         :activeFormIndex==2?
               <Summery  enabledNext={(v)=>setEnableNext(v)} />
-        :activeFormIndex==3?
-          <Experience />  
-          :activeFormIndex==4?
-          <Education/>
-          :activeFormIndex==5?
-          <Skills/>
-          :activeFormIndex==6?
-          <Navigate to={'/my-resume/'+resumeId+"/view"}/>
+        // :activeFormIndex==3?
+          // <Experience />  
+          // :activeFormIndex==4?
+          // <Education/>
+          // :activeFormIndex==5?
+          // <Skills/>
+          // :activeFormIndex==6?
+          // <Navigate to={'/my-resume/'+resumeId+"/view"}/>
               
         :null
-          } */}
+          } 
         
 
       {/* Experience  */}
