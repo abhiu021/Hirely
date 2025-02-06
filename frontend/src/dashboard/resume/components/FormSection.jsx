@@ -30,7 +30,7 @@ function FormSection() {
             <Button 
             disabled={!enableNext}
             className="flex gap-2" size="sm"
-            onClick={()=>setActiveFormIndex(activeFormIndex + 4)}
+            onClick={()=>setActiveFormIndex(activeFormIndex + 1)}
             > Next 
             <ArrowRight/> </Button>
           </div>
