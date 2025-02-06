@@ -13,6 +13,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import MinimalATSTemplate from './templates/MinimalATSTemplate'
+import ProfessionalTemplate from './templates/ProfessionalTemplate'
 
 function ResumePreview() {
     const [template , setTemplate] = useState('modern');
