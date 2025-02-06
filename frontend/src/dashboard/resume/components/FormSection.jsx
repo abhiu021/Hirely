@@ -46,8 +46,8 @@ function FormSection() {
           <Education/>
           :activeFormIndex==5?
           <Skills/>
-          // :activeFormIndex==6?
-          // <Navigate to={'/my-resume/'+resumeId+"/view"}/>
+          :activeFormIndex==6?
+          <Navigate to={'/my-resume/'+resumeId+"/view"}/>
               
         :null
           } 
