@@ -3,11 +3,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { ResumeInfoContext } from '@/context/ResumeInfoContext';
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import GlobalApi from './../../../../../service/GlobalApi';
 import { Brain, LoaderCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { AIChatSession } from '../../../../../service/AIModal';
-import { useUser, useAuth } from '@clerk/clerk-react';
+import { useAuth } from '@clerk/clerk-react';
 import axios from 'axios';
 
 const prompt = "Job Title: {jobTitle} , Depends on job title give me list of summery for 3 experience level, Mid Level and Freasher level in 3 -4 lines in array format, With summery and experience_level Field in JSON Format";
@@ -15,17 +14,48 @@ const prompt = "Job Title: {jobTitle} , Depends on job title give me list of sum
 function Summery({ enabledNext }) {
     const { getToken } = useAuth();
     const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
-    const [summery, setSummery] = useState(resumeInfo?.summery || '');
+    const [summery, setSummery] = useState('');
     const [loading, setLoading] = useState(false);
     const [aiGeneratedSummeryList, setAiGenerateSummeryList] = useState(null);
     const params = useParams();
 
     useEffect(() => {
-        setResumeInfo({
-            ...resumeInfo,
+        const fetchResumeData = async () => {
+            setLoading(true);
+            try {
+                const id = params?.resumeId; // Get the resume ID from URL params
+                const token = await getToken(); // Get the authorization token
+                const response = await axios.get(`http://localhost:5000/api/dashboard/resume/${id}/edit`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                console.log('Response:', response);
+                // Assuming the response structure is { data: { summery: ... } }
+                const fetchedData = response.data?.data;
+                console.log('Fetched data:', fetchedData);
+                setSummery(fetchedData.summery || ''); // Set the fetched summary directly
+
+                // Optionally set the resumeInfo context
+                setResumeInfo(fetchedData);
+            } catch (error) {
+                console.error('Error fetching resume data:', error);
+                toast.error("Failed to fetch resume details");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchResumeData();
+    }, [params, getToken, setResumeInfo]); // Dependencies include params and getToken
+
+    useEffect(() => {
+        setResumeInfo((prevInfo) => ({
+            ...prevInfo,
             summery: summery
-        });
-    }, [summery]);
+        }));
+    }, [summery, setResumeInfo]);
 
     const GenerateSummeryFromAI = async () => {
         setLoading(true);
@@ -59,7 +89,7 @@ function Summery({ enabledNext }) {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log('Response',response);
+            console.log('Response', response);
             enabledNext(true);
             toast("Details updated");
         } catch (error) {

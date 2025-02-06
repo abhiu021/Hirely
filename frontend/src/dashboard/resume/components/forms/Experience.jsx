@@ -3,48 +3,78 @@ import { Input } from '@/components/ui/input';
 import React, { useContext, useEffect, useState } from 'react';
 import RichTextEditor from '../RichTextEditor';
 import { ResumeInfoContext } from '@/context/ResumeInfoContext';
-import { useAuth } from '@clerk/clerk-react';
-import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import GlobalApi from './../../../../../service/GlobalApi';
 import { toast } from 'sonner';
+import { useAuth } from '@clerk/clerk-react';
+import axios from 'axios'; // Import Axios
 import { LoaderCircle } from 'lucide-react';
 
-function Experience({ enabledNext }) {
+const formField = {
+    title: '',
+    companyName: '',
+    city: '',
+    state: '',
+    startDate: '',
+    endDate: '',
+    workSummery: '',
+};
+
+function Experience() {
     const [experinceList, setExperinceList] = useState([]);
+    const params = useParams();
     const { getToken } = useAuth();
     const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
-    const params = useParams();
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (resumeInfo && Array.isArray(resumeInfo.Experience) && resumeInfo.Experience.length > 0) {
-            setExperinceList(resumeInfo.Experience);
-        }
-    }, [resumeInfo]);
+        // Fetch resume data when the component mounts
+        const fetchResumeData = async () => {
+            setLoading(true);
+            try {
+                const id = params?.resumeId; // Get the resume ID from URL params
+                const token = await getToken(); // Get the authorization token
+                const response = await axios.get(`http://localhost:5000/api/dashboard/resume/${id}/edit`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                console.log('Response:', response);
+                const fetchedData = response.data?.data;  
+                console.log('Fetched data:', fetchedData);
+
+                // Set the experience list from fetched data
+                if (fetchedData.Experience) {
+                    setExperinceList(fetchedData.Experience);
+                }
+
+                // Optionally set the resumeInfo context
+                setResumeInfo(fetchedData);
+            } catch (error) {
+                console.error('Error fetching resume data:', error);
+                toast.error("Failed to fetch resume details");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchResumeData();
+    }, [params, getToken, setResumeInfo]); // Dependencies include params and getToken
 
     const handleChange = (index, event) => {
-        // enabledNext(false);
         const newEntries = experinceList.slice();
         const { name, value } = event.target;
         newEntries[index][name] = value;
+        console.log(newEntries);
         setExperinceList(newEntries);
     };
 
     const AddNewExperience = () => {
-        setExperinceList([...experinceList, {
-            title: '',
-            companyName: '',
-            city: '',
-            state: '',
-            startDate: '',
-            endDate: '',
-            workSummery: '',
-        }]);
+        setExperinceList([...experinceList, { ...formField }]); // Add a new experience entry
     };
 
     const RemoveExperience = () => {
-        setExperinceList(experinceList => experinceList.slice(0, -1));
+        setExperinceList(experinceList => experinceList.slice(0, -1)); // Remove the last experience entry
     };
 
     const handleRichTextEditor = (e, name, index) => {
@@ -54,23 +84,28 @@ function Experience({ enabledNext }) {
     };
 
     useEffect(() => {
-        setResumeInfo({
-            ...resumeInfo,
-            experience: experinceList
-        });
-    }, [experinceList]);
+        // Update resumeInfo only when experinceList changes
+        setResumeInfo(prevInfo => ({
+            ...prevInfo,
+            Experience: experinceList
+        }));
+    }, [experinceList, setResumeInfo]); // Add setResumeInfo to dependencies
 
     const onSave = async () => {
         setLoading(true);
         const data = {
             data: {
-                experience: experinceList.map(({ id, ...rest }) => rest) // Exclude id if present
+                Experience: experinceList.map(({ id, ...rest }) => rest) // Exclude id if present
             }
         };
+
+        console.log(experinceList);
 
         try {
             const id = params?.resumeId;
             const token = await getToken();
+            console.log('Request data:', data);
+            console.log(id);
             const response = await axios.put(`http://localhost:5000/api/dashboard/resume/${id}/edit`, data, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -78,7 +113,6 @@ function Experience({ enabledNext }) {
                 },
             });
             console.log(response);
-            // enabledNext(true); // Enable next step after saving
             toast("Details updated");
         } catch (error) {
             console.error('Error updating resume:', error);
@@ -138,7 +172,7 @@ function Experience({ enabledNext }) {
                                     />
                                 </div>
                                 <div className='col-span-2'>
-                                    {/* Work Summary  */}
+                                    {/* Work Summery  */}
                                     <RichTextEditor
                                         index={index}
                                         defaultValue={item?.workSummery}
@@ -152,14 +186,15 @@ function Experience({ enabledNext }) {
                     <div className='flex gap-2'>
                         <Button variant="outline" onClick={AddNewExperience} className="text-primary"> + Add More Experience</Button>
                         <Button variant="outline" onClick={RemoveExperience} className="text-primary"> - Remove</Button>
+
                     </div>
-                    <Button disabled={loading} onClick={onSave}>
+                    <Button disabled={loading} onClick={() => onSave()}>
                         {loading ? <LoaderCircle className='animate-spin' /> : 'Save'}
                     </Button>
                 </div>
             </div>
         </div>
-    );
+    )
 }
 
-export default Experience;
+export default Experience

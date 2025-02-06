@@ -5,8 +5,7 @@ import { ResumeInfoContext } from '@/context/ResumeInfoContext';
 import { LoaderCircle } from 'lucide-react';
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import GlobalApi from './../../../../../service/GlobalApi';
-import { useUser, useAuth } from '@clerk/clerk-react';
+import { useAuth } from '@clerk/clerk-react';
 import axios from 'axios';
 import { toast } from 'sonner';
 
@@ -18,11 +17,38 @@ function Education() {
   const [educationalList, setEducationalList] = useState([]); // Initialize as an empty array
 
   useEffect(() => {
-    // Check if resumeInfo and resumeInfo.education are defined and is an array
-    if (resumeInfo && Array.isArray(resumeInfo.education)) {
-      setEducationalList(resumeInfo.education);
-    }
-  }, [resumeInfo]); // Add resumeInfo as a dependency
+    const fetchEducationData = async () => {
+      setLoading(true);
+      try {
+        const id = params?.resumeId; // Get the resume ID from URL params
+        const token = await getToken(); // Get the authorization token
+        const response = await axios.get(`http://localhost:5000/api/dashboard/resume/${id}/edit`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        console.log('Response:', response);
+        const fetchedData = response.data?.data;  
+        console.log('Fetched data:', fetchedData);
+
+        // Set the educational list from fetched data
+        if (fetchedData.education) {
+          setEducationalList(fetchedData.education);
+        }
+
+        // Optionally set the resumeInfo context
+        setResumeInfo(fetchedData);
+      } catch (error) {
+        console.error('Error fetching education data:', error);
+        toast.error("Failed to fetch education details");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEducationData();
+  }, [params, getToken, setResumeInfo]); // Dependencies include params and getToken
 
   const handleChange = (event, index) => {
     const newEntries = educationalList.slice();
@@ -46,7 +72,7 @@ function Education() {
     setEducationalList((educationalList) => educationalList.slice(0, -1));
   };
 
-  const onSave =async () => {
+  const onSave = async () => {
     setLoading(true);
     const data = {
       data: {
@@ -66,7 +92,6 @@ function Education() {
         },
       });
       console.log(response);
-      // enabledNext(true);
       toast("Details updated");
     } catch (error) {
       console.error('Error updating resume:', error);
@@ -77,11 +102,12 @@ function Education() {
   };
 
   useEffect(() => {
-    setResumeInfo({
-      ...resumeInfo,
+    // Update resumeInfo only when educationalList changes
+    setResumeInfo(prevInfo => ({
+      ...prevInfo,
       education: educationalList
-    });
-  }, [educationalList]);
+    }));
+  }, [educationalList, setResumeInfo]); 
 
   return (
     <div className='p-5 shadow-lg rounded-lg border-t-primary border-t-4 mt-10'>

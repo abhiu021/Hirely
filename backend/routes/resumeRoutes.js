@@ -19,7 +19,7 @@ router.get('/', getUserResumes);
 
 // Fetch a single resume by ID
 // In (dashboard/:resumeId/edit) fetch a resume by ID
-router.get('/:id/edit', getResumeById);
+router.get('/resume/:_id/edit', getResumeById);
 
 // Update a resume
 router.put('/resume/:_id/edit', updateResume);

@@ -5,9 +5,8 @@ import '@smastrom/react-rating/style.css';
 import { Button } from '@/components/ui/button';
 import { LoaderCircle } from 'lucide-react';
 import { ResumeInfoContext } from '@/context/ResumeInfoContext';
-import GlobalApi from './../../../../../service/GlobalApi';
 import { useParams } from 'react-router-dom';
-import { useUser, useAuth } from '@clerk/clerk-react';
+import { useAuth } from '@clerk/clerk-react';
 import axios from 'axios'; // Import Axios
 import { toast } from 'sonner';
 
@@ -15,18 +14,42 @@ function Skills() {
     const [skillsList, setSkillsList] = useState([{ name: '', rating: 0 }]); // Initialize as an array
     const { resumeId } = useParams();
     const [loading, setLoading] = useState(false);
-    const params = useParams();
-
     const { getToken } = useAuth();
-
     const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
 
     useEffect(() => {
-        // Check if resumeInfo and resumeInfo.skills are defined and is an array
-        if (resumeInfo && Array.isArray(resumeInfo.skills)) {
-            setSkillsList(resumeInfo.skills);
-        }
-    }, [resumeInfo]); // Add resumeInfo as a dependency
+        const fetchSkillsData = async () => {
+            setLoading(true);
+            try {
+                const id = resumeId; // Get the resume ID from URL params
+                const token = await getToken(); // Get the authorization token
+                const response = await axios.get(`http://localhost:5000/api/dashboard/resume/${id}/edit`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                console.log('Response:', response);
+                const fetchedData = response.data?.data;  
+                console.log('Fetched data:', fetchedData);
+
+                // Set the skills list from fetched data
+                if (fetchedData.skills) {
+                    setSkillsList(fetchedData.skills);
+                }
+
+                // Optionally set the resumeInfo context
+                setResumeInfo(fetchedData);
+            } catch (error) {
+                console.error('Error fetching skills data:', error);
+                toast.error("Failed to fetch skills details");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSkillsData();
+    }, [resumeId, getToken, setResumeInfo]); // Dependencies include resumeId and getToken
 
     const handleChange = (index, name, value) => {
         const newEntries = skillsList.slice();
@@ -51,7 +74,7 @@ function Skills() {
         };
 
         try {
-            const id = params?.resumeId;
+            const id = resumeId;
             const token = await getToken();
             console.log('Request data:', data);
             console.log(id);
@@ -62,7 +85,6 @@ function Skills() {
                 },
             });
             console.log(response);
-            // enabledNext(true);
             toast("Details updated");
         } catch (error) {
             console.error('Error updating resume:', error);
@@ -77,7 +99,7 @@ function Skills() {
             ...resumeInfo,
             skills: skillsList
         });
-    }, [skillsList]);
+    }, [skillsList, setResumeInfo]);
 
     return (
         <div className='p-5 shadow-lg rounded-lg border-t-primary border-t-4 mt-10'>

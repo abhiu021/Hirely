@@ -55,14 +55,16 @@ export const getUserResumes = async (req, res) => {
 // Get a single resume by ID
 export const getResumeById = async (req, res) => {
   try {
-    
-    const resume = await Resume.find();
+    const id = req.params; // Get the ID from the request parameters
+
+    // Find the resume by ID
+    const resume = await Resume.findById(id); // Use findById to fetch a specific resume
 
     if (!resume) {
       return res.status(404).json({ message: 'Resume not found' });
     }
 
-    res.status(200).json(resume);
+    res.status(200).json({ data: resume }); // Return the resume data in a structured format
   } catch (error) {
     console.error('Error fetching resume:', error);
     res.status(500).json({ message: 'Internal server error' });
