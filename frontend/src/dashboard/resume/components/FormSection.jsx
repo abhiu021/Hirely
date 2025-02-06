@@ -3,9 +3,9 @@ import PersonalDetail from './forms/PersonalDetail'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, ArrowRight, Home, LayoutGrid } from 'lucide-react'
 import Summery from './forms/Summery';
-// import Experience from './forms/Experience';
-// import Education from './forms/Education';
-// import Skills from './forms/Skills';
+import Experience from './forms/Experience';
+import Education from './forms/Education';
+import Skills from './forms/Skills';
 import { Link, Navigate, useParams } from 'react-router-dom';
 // import ThemeColor from './ThemeColor';
 
@@ -30,7 +30,7 @@ function FormSection() {
             <Button 
             disabled={!enableNext}
             className="flex gap-2" size="sm"
-            onClick={()=>setActiveFormIndex(activeFormIndex+1)}
+            onClick={()=>setActiveFormIndex(activeFormIndex + 4)}
             > Next 
             <ArrowRight/> </Button>
           </div>
@@ -40,12 +40,12 @@ function FormSection() {
         <PersonalDetail enabledNext={(v)=>setEnableNext(v)} />
          :activeFormIndex==2?
               <Summery  enabledNext={(v)=>setEnableNext(v)} />
-        // :activeFormIndex==3?
-          // <Experience />  
-          // :activeFormIndex==4?
-          // <Education/>
-          // :activeFormIndex==5?
-          // <Skills/>
+        :activeFormIndex==3?
+          <Experience />  
+          :activeFormIndex==4?
+          <Education/>
+          :activeFormIndex==5?
+          <Skills/>
           // :activeFormIndex==6?
           // <Navigate to={'/my-resume/'+resumeId+"/view"}/>
               

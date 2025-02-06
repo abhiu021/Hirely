@@ -42,7 +42,7 @@ const resumeSchema = new mongoose.Schema({
       rating: Number,
     },
   ],
-  summery: { type: String, required: true },
+  summery: { type: String},
   themeColor: String,
   createdAt: { type: Date, default: Date.now },
 });

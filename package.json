@@ -6,5 +6,8 @@
   "scripts": {
     "start": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm start\"",
     "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install"
+  },
+  "dependencies": {
+    "react-simple-wysiwyg": "^3.2.0"
   }
 }

@@ -3,9 +3,9 @@ import Resume from '../models/Resume.js';
 // Create a new resume
 export const createResume = async (req, res) => {
   try {
-    console.log('Request data:', req.body); // Log the request data
+    // console.log('Request data:', req.body); // Log the request data
     const { title, resumeId, userEmail, userName } = req.body.data; // Extract from nested "data" object
-
+    console.log('Request data:'); // Log the request data
     // Validate input
     if (!title || !resumeId || !userEmail || !userName) {
       console.log('All fields are required');
