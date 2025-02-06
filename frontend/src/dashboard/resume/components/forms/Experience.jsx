@@ -24,7 +24,7 @@ function Experience({ enabledNext }) {
     }, [resumeInfo]);
 
     const handleChange = (index, event) => {
-        enabledNext(false);
+        // enabledNext(false);
         const newEntries = experinceList.slice();
         const { name, value } = event.target;
         newEntries[index][name] = value;
