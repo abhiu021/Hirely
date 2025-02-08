@@ -1,3 +1,4 @@
+import { clerkClient } from '@clerk/express'; 
 import { getAuth, requireAuth } from '@clerk/express';
 import Resume from '../models/Resume.js';
 
@@ -38,7 +39,6 @@ export const createResume = async (req, res) => {
 };
 
 // Get all resumes for the authenticated user
-import { clerkClient } from '@clerk/express'; 
 export const getUserResumes = async (req, res) => {
   try {
     // Get the authenticated user's ID from the request

@@ -1,14 +1,15 @@
-import { Loader2Icon, MoreVertical, Notebook } from 'lucide-react'
-import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Loader2Icon, MoreVertical } from 'lucide-react';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@clerk/clerk-react';
+import { useUser } from '@clerk/clerk-react';
+import axios from 'axios'; // Import Axios
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,97 +19,87 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import GlobalApi from './../../../service/GlobalApi'
-import { toast } from 'sonner'
+} from "@/components/ui/alert-dialog";
+import GlobalApi from './../../../service/GlobalApi';
+import { toast } from 'sonner';
 
-function ResumeCardItem({resume,refreshData}) {
+function ResumeCardItem({ resume, refreshData }) {
+  const navigation = useNavigate();
+  const { getToken } = useAuth();
+  const [openAlert, setOpenAlert] = useState(false);
+  const { user } = useUser();
+  const [loading, setLoading] = useState(false);
 
-  const navigation=useNavigate();
-  const [openAlert,setOpenAlert]=useState(false);
-  const [loading,setLoading]=useState(false);
-  // const onMenuClick=(url)=>{
-  //   navigation(url)
-  // }
-
-
-  const onDelete=()=>{
+  const onDelete = async () => {
     setLoading(true);
-    GlobalApi.DeleteResumeById(resume.documentId).then(resp=>{
-      console.log(resp);
+    try {
+      const token = await getToken();
+      console.log('Token:', token);
+      console.log('Resume ID:', resume._id);
+      const response = await axios.delete('http://localhost:5000/api/dashboard/', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        data: { id: resume._id },
+      });
+    
       toast('Resume Deleted!');
-      refreshData()
+      refreshData();
+      window.location.reload();
+    } catch (error) {
+      console.error('Error deleting resume:', error);
+      toast.error("Failed to delete resume");
+    } finally {
       setLoading(false);
       setOpenAlert(false);
-    },(error)=>{
-      setLoading(false);
-    })
-  }
+    }
+  };
+
   return (
-    
-       <div className=''>
-          <Link to={'/dashboard/resume/'+resume.documentId+"/edit"}>
-        <div className='p-14  bg-gradient-to-b
-          from-pink-100 via-purple-200 to-blue-200
-        h-[280px] 
-          rounded-t-lg border-t-4
-        '
-        style={{
-          borderColor:resume?.themeColor
-        }}
-        >
-              <div className='flex 
-        items-center justify-center h-[180px] '>
-                {/* <Notebook/> */}
-                <img src="/cv.png" width={80} height={80} />
-              </div>
+    <div>
+      <Link to={`/dashboard/resume/${resume._id}/edit`}>
+        <div className='p-14 bg-gradient-to-b from-pink-100 via-purple-200 to-blue-200 h-[280px] rounded-t-lg border-t-4'
+          style={{ borderColor: resume?.themeColor }}>
+          <div className='flex items-center justify-center h-[180px]'>
+            <img src="/cv.png" width={80} height={80} alt="Resume Icon" />
+          </div>
         </div>
-        </Link>
-        <div className='border p-3 flex justify-between  text-white rounded-b-lg shadow-lg'
-         style={{
-          background:resume?.themeColor
-        }}>
-          <h2 className='text-sm'>{resume.title}</h2>
-         
-          <DropdownMenu>
+      </Link>
+      <div className='border p-3 flex justify-between text-white rounded-b-lg shadow-lg'
+        style={{ background: resume?.themeColor }}>
+        <h2 className='text-sm text-black'>{resume.title}</h2>
+        <DropdownMenu>
           <DropdownMenuTrigger>
-          <MoreVertical className='h-4 w-4 cursor-pointer'/>
+            <MoreVertical className='h-4 w-4 cursor-pointer' aria-label="More options" />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-           
-            <DropdownMenuItem  onClick={()=>navigation('/dashboard/resume/'+resume.documentId+"/edit")}>Edit</DropdownMenuItem>
-            <DropdownMenuItem onClick={()=>navigation('/my-resume/'+resume.documentId+"/view")}>View</DropdownMenuItem>
-            <DropdownMenuItem onClick={()=>navigation('/my-resume/'+resume.documentId+"/view")}>Download</DropdownMenuItem>
-            <DropdownMenuItem onClick={()=>setOpenAlert(true)}>Delete</DropdownMenuItem>
-            
+            <DropdownMenuItem onClick={() => navigation(`/dashboard/resume/${resume._id}/edit`)}>Edit</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigation(`/my-resume/${resume._id}/view`)}>View</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigation(`/my-resume/${resume._id}/download`)}>Download</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setOpenAlert(true)}>Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
         <AlertDialog open={openAlert}>
-        
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your account
-              and remove your data from our servers.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={()=>setOpenAlert(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={onDelete} 
-            disabled={loading}>
-              {loading? <Loader2Icon className='animate-spin'/>:'Delete'}
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete your resume.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setOpenAlert(false)}>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={onDelete} disabled={loading}>
+                {loading ? <Loader2Icon className='animate-spin' /> : 'Delete'}
               </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-        </div>
-        </div>
-
-  )
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </div>
+  );
 }
 
-export default ResumeCardItem
+export default ResumeCardItem;
