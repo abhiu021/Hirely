@@ -25,6 +25,6 @@ router.get('/resume/:_id/edit', getResumeById);
 router.put('/resume/:_id/edit', updateResume);
 
 // Delete a resume
-router.delete('/:resumeId/edit', deleteResume);
+router.delete('/', deleteResume);
 
 export default router;

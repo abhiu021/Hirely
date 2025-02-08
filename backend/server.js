@@ -2,9 +2,10 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import { requireAuth } from '@clerk/express'; // Corrected Clerk middleware import
+import { clerkClient, requireAuth } from '@clerk/express' // Corrected Clerk middleware import
 import connectDB from './db/connectDB.js';
 import resumeRoutes from './routes/resumeRoutes.js';
+import { clerkMiddleware } from '@clerk/express'
 import bodyParser from 'body-parser';
 
 dotenv.config();
@@ -12,8 +13,10 @@ dotenv.config();
 const app=express();
 app.use(bodyParser.json());
 
+
 // Middleware
 app.use(cors());
+app.use(clerkMiddleware())
 app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));
 // app.use('/files', express.static('files')); // Make folder static

@@ -1,3 +1,4 @@
+import { getAuth, requireAuth } from '@clerk/express';
 import Resume from '../models/Resume.js';
 
 // Create a new resume
@@ -37,15 +38,34 @@ export const createResume = async (req, res) => {
 };
 
 // Get all resumes for the authenticated user
+import { clerkClient } from '@clerk/express'; 
 export const getUserResumes = async (req, res) => {
   try {
-    // Get the authenticated user's email from Clerk
-    const userEmail = req.auth.user.emailAddresses[0].emailAddress;
+    // Get the authenticated user's ID from the request
+    const { userId } = getAuth(req);
+    
+    // Fetch the user details from Clerk using the userId
+    const user = await clerkClient.users.getUser (userId);
+
+    // Check if the user has email addresses
+    if (!user || !user.emailAddresses || user.emailAddresses.length === 0) {
+      return res.status(400).json({ message: 'User  email not found.' });
+    }
+
+    // Get the user's primary email
+    const userEmail = user.emailAddresses[0].emailAddress;
 
     // Find resumes by user email
     const resumes = await Resume.find({ userEmail });
+    // console.log('Resumes:', resumes); // Log the found resumes
 
-    res.status(200).json(resumes);
+    // Check if resumes were found
+    if (!resumes.length) {
+      return res.status(404).json({ message: 'No resumes found for this user.' });
+    }
+
+    // Return the found resumes
+    res.status(200).json({ data: resumes }); // Wrap in a data object for consistency
   } catch (error) {
     console.error('Error fetching resumes:', error);
     res.status(500).json({ message: 'Internal server error' });
@@ -110,7 +130,9 @@ export const updateResume = async (req, res) => {
 // Delete a resume
 export const deleteResume = async (req, res) => {
   try {
-    const { id } = req.params;
+    
+    const {id}  = req.body;
+    console.log(id)
 
     // Find and delete the resume
     const deletedResume = await Resume.findByIdAndDelete(id);
