@@ -28,7 +28,7 @@ function ResumePreview() {
 
   return (
     <div className="relative">
-      <div className="absolute top-4 right-4 z-10">
+      <div className="absolute top-4 right-4 z-2">
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center gap-2 px-4 py-2 bg-white rounded-md shadow hover:bg-gray-50">
             {templates[template]}
