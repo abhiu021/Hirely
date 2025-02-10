@@ -48,7 +48,7 @@ function Dashboard() {
   }
 
   useEffect(() => {
-    console.log('Resume List Length:', resumeList.length); // Log the length of the resume list
+    console.log('Resume List Length:', resumeList?.length); // Log the length of the resume list
   }, [resumeList]);
   return (
     <div className='p-10 md:px-20 lg:px-32'>
@@ -59,7 +59,7 @@ function Dashboard() {
       mt-10
       '>
         <AddResume />
-        {resumeList.length > 0 ? resumeList.map((resume, index) => (
+        {resumeList?.length > 0 ? resumeList.map((resume, index) => (
           <ResumeCardItem resume={resume} key={index} refreshData={GetResumesList} />
         )) :
           [1, 2, 3, 4].map((item, index) => (

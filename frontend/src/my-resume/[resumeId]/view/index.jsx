@@ -8,14 +8,28 @@ import { useAuth } from '@clerk/clerk-react';
 import axios from 'axios'; // Import Axios
 import { RWebShare } from 'react-web-share';
 import { toast } from 'sonner';
+import { 
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown } from 'lucide-react';
 
 function ViewResume() {
     const [resumeInfo, setResumeInfo] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [activeTemplate, setActiveTemplate] = useState('modern');
     const params = useParams();
     const { getToken } = useAuth();
 
     const resumeId = params.resumeId; // Extract resumeId from params
+
+    const templates = {
+        modern: 'Modern Template',
+        minimal: 'Minimal ATS',
+        professional: 'Professional'
+    };
 
     const GetResumeInfo = async () => {
         setLoading(true);
@@ -57,8 +71,27 @@ function ViewResume() {
                     <p className='text-center text-gray-400'>
                         Now you are ready to download your resume and you can share a unique resume URL with your friends and family.
                     </p>
-                    <div className='flex justify-between px-44 my-10'>
+                    <div className='flex justify-between items-center px-44 my-10'>
                         <Button onClick={HandleDownload}>Download</Button>
+
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="flex items-center gap-2">
+                                    {templates[activeTemplate]}
+                                    <ChevronDown className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                {Object.entries(templates).map(([key, value]) => (
+                                    <DropdownMenuItem
+                                        key={key}
+                                        onClick={() => setActiveTemplate(key)}
+                                    >
+                                        {value}
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
 
                         <RWebShare
                             data={{
@@ -75,7 +108,7 @@ function ViewResume() {
             </div>
             <div className='my-10 mx-10 md:mx-20 lg:mx-36'>
                 <div id="print-area">
-                    <ResumePreview />
+                    <ResumePreview template={activeTemplate} />
                 </div>
             </div>
         </ResumeInfoContext.Provider>

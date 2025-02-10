@@ -1,96 +1,95 @@
 import React from 'react';
 
-const MinimalATSTemplate = ({ resumeInfo }) => {
+const ATSTemplate = ({ resumeInfo }) => {
   return (
-    <div className="p-8 max-w-[850px] mx-auto bg-white font-sans leading-relaxed">
-      {/* Header */}
-      <header className="mb-6 border-b-2 pb-4" style={{ borderColor: resumeInfo?.themeColor }}>
-        <h1 className="text-2xl font-bold mb-1" style={{ color: resumeInfo?.themeColor }}>
+    <div className="max-w-[850px] mx-auto p-8 font-sans text-gray-800 leading-relaxed bg-white">
+      {/* Contact Section */}
+      <header className="mb-6">
+        <h1 className="text-2xl font-bold mb-1">
           {resumeInfo?.firstName} {resumeInfo?.lastName}
         </h1>
         <p className="text-lg mb-2">{resumeInfo?.jobTitle}</p>
-        <div className="text-sm space-y-1" style={{ color: resumeInfo?.themeColor }}>
+        <div className="text-sm space-y-1">
           <p>{resumeInfo?.address}</p>
-          <p>{resumeInfo?.phone} • {resumeInfo?.email}</p>
+          <p>{resumeInfo?.phone}</p>
+          <p>{resumeInfo?.email}</p>
         </div>
       </header>
 
-      {/* Summary */}
+      {/* Professional Summary */}
       {resumeInfo?.summery && (
         <section className="mb-6">
-          <h2 className="text-lg font-bold mb-2 uppercase tracking-wider" 
-              style={{ color: resumeInfo?.themeColor }}>
-            Summary
+          <h2 className="text-lg font-bold mb-2 uppercase border-b border-gray-300 pb-1">
+            Professional Summary
           </h2>
-          <p className="text-sm leading-relaxed">{resumeInfo.summery}</p>
+          <p className="text-sm">{resumeInfo?.summery}</p>
         </section>
       )}
 
-      {/* Experience */}
+      {/* Experience Section */}
       {resumeInfo?.Experience?.length > 0 && (
         <section className="mb-6">
-          <h2 className="text-lg font-bold mb-3 uppercase tracking-wider" 
-              style={{ color: resumeInfo?.themeColor }}>
-            Experience
+          <h2 className="text-lg font-bold mb-2 uppercase border-b border-gray-300 pb-1">
+            Work Experience
           </h2>
-          {resumeInfo.Experience.map((experience, index) => (
-            <div key={index} className="mb-4 pb-4 border-b last:border-b-0">
-              <div className="flex justify-between">
-                <h3 className="font-bold text-base" style={{ color: resumeInfo?.themeColor }}>
-                  {experience.title}
-                </h3>
-                <span className="text-sm">{experience.startDate} - {experience.currentlyWorking ? 'Present' : experience.endDate}</span>
+          {resumeInfo.Experience.map((exp, index) => (
+            <div key={index} className="mb-4">
+              <div className="mb-1">
+                <h3 className="font-bold">{exp.title}</h3>
+                <p className="text-sm">
+                  {exp.companyName} | {exp.city}, {exp.state}
+                </p>
+                <p className="text-sm">
+                  {exp.startDate} - {exp.currentlyWorking ? 'Present' : exp.endDate}
+                </p>
               </div>
-              <p className="text-sm font-semibold">{experience.companyName}, {experience.city}, {experience.state}</p>
-              <div className="text-sm mt-1" dangerouslySetInnerHTML={{ __html: experience.workSummery }} />
+              <div className="text-sm pl-4">
+                {exp.workSummery && (
+                  <div 
+                    className="list-disc"
+                    dangerouslySetInnerHTML={{ 
+                      __html: exp.workSummery.replace(/<p>/g, '<p class="mb-1">') 
+                    }} 
+                  />
+                )}
+              </div>
             </div>
           ))}
         </section>
       )}
 
-      {/* Education */}
+      {/* Education Section */}
       {resumeInfo?.education?.length > 0 && (
         <section className="mb-6">
-          <h2 className="text-lg font-bold mb-3 uppercase tracking-wider" 
-              style={{ color: resumeInfo?.themeColor }}>
+          <h2 className="text-lg font-bold mb-2 uppercase border-b border-gray-300 pb-1">
             Education
           </h2>
           {resumeInfo.education.map((edu, index) => (
-            <div key={index} className="mb-3">
-              <div className="flex justify-between">
-                <h3 className="font-bold text-base" style={{ color: resumeInfo?.themeColor }}>
-                  {edu.degree} in {edu.major}
-                </h3>
-                <span className="text-sm">{edu.startDate} - {edu.endDate}</span>
-              </div>
-              <p className="text-sm font-semibold">{edu.universityName}</p>
+            <div key={index} className="mb-2">
+              <h3 className="font-bold">
+                {edu.degree} {edu.major && `in ${edu.major}`}
+              </h3>
+              <p className="text-sm">{edu.universityName}</p>
+              <p className="text-sm">{edu.startDate} - {edu.endDate}</p>
+              {edu.description && (
+                <p className="text-sm mt-1">{edu.description}</p>
+              )}
             </div>
           ))}
         </section>
       )}
 
-      {/* Skills */}
+      {/* Skills Section */}
       {resumeInfo?.skills?.length > 0 && (
         <section>
-          <h2 className="text-lg font-bold mb-3 uppercase tracking-wider" 
-              style={{ color: resumeInfo?.themeColor }}>
-            Skills
+          <h2 className="text-lg font-bold mb-2 uppercase border-b border-gray-300 pb-1">
+            Technical Skills
           </h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="text-sm">
             {resumeInfo.skills.map((skill, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <span className="text-sm font-medium" style={{ color: resumeInfo?.themeColor }}>
-                  {skill.name}
-                </span>
-                <div className="w-24 bg-gray-200 h-1.5 ml-2">
-                  <div className="h-full"
-                    style={{
-                      width: `${skill.rating * 20}%`,
-                      backgroundColor: resumeInfo?.themeColor
-                    }}
-                  />
-                </div>
-              </div>
+              <span key={index} className="inline-block mr-4 mb-2">
+                {skill.name}
+              </span>
             ))}
           </div>
         </section>
@@ -99,4 +98,4 @@ const MinimalATSTemplate = ({ resumeInfo }) => {
   );
 };
 
-export default MinimalATSTemplate;
+export default ATSTemplate;

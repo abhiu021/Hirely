@@ -38,7 +38,7 @@ function AddResume() {
 
         try {
             const token = await getToken(); // Get the Clerk session token
-            console.log('Session token:', token); // Log the session token
+            console.log("Token validation:", token ? "Valid" : "Invalid");// Log the session token
             console.log('Creating resume...:', data);
             const response = await axios.post('http://localhost:5000/api/dashboard/', data, {
                 headers: {
