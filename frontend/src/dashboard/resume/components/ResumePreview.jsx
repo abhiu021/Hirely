@@ -7,6 +7,7 @@ import EducationalPreview from './preview/EducationalPreview';
 import SkillsPreview from './preview/SkillsPreview';
 import MinimalATSTemplate from './templates/MinimalATSTemplate';
 import ProfessionalTemplate from './templates/ProfessionalTemplate';
+import ProjectsPreview from './preview/ProjectsPreview';
 
 function ResumePreview({ template = 'modern' }) {
     const { resumeInfo } = useContext(ResumeInfoContext);
@@ -20,6 +21,7 @@ function ResumePreview({ template = 'modern' }) {
                         <SummeryPreview resumeInfo={resumeInfo} />
                         {resumeInfo?.Experience?.length > 0 && <ExperiencePreview resumeInfo={resumeInfo} />}
                         {resumeInfo?.education?.length > 0 && <EducationalPreview resumeInfo={resumeInfo} />}
+                        {resumeInfo?.projects?.length > 0 && <ProjectsPreview resumeInfo={resumeInfo} />}
                         {resumeInfo?.skills?.length > 0 && <SkillsPreview resumeInfo={resumeInfo} />}
                     </>
                 );
