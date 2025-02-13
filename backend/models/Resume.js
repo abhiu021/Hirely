@@ -42,6 +42,15 @@ const resumeSchema = new mongoose.Schema({
       rating: Number,
     },
   ],
+  projects: [
+    {
+      name: { type: String, required: true },
+      description: { type: String, required: true },
+      technologies: { type: String, required: true },
+      link: { type: String, default: '' }, // Optional field
+      isVerified: { type: Boolean, default: false }, // Default to false
+    },
+  ],
   summery: { type: String},
   themeColor: String,
   createdAt: { type: Date, default: Date.now },

@@ -7,10 +7,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { LoaderCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { useAuth } from '@clerk/clerk-react';
 import axios from 'axios';
 
 function Projects({ enableNext }) {
-    const { resumeId } = useParams();
+    const params = useParams();
+    const { getToken } = useAuth();
     const [projectsList, setProjectsList] = useState([]);
     const [loading, setLoading] = useState(false);
     const [githubUrl, setGithubUrl] = useState('');
@@ -23,6 +25,39 @@ function Projects({ enableNext }) {
         }
     }, [resumeInfo]);
 
+    useEffect(() => {
+        // Fetch resume data when the component mounts
+        const fetchResumeData = async () => {
+            setLoading(true);
+            try {
+                const id = params?.resumeId; // Get the resume ID from URL params
+                const token = await getToken(); // Get the authorization token
+                const response = await axios.get(`http://localhost:5000/api/dashboard/resume/${id}/edit`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                console.log('Response:', response);
+                const fetchedData = response.data?.data?.projects;  
+                console.log('Fetched data:', fetchedData);
+
+                // Set the projects list from fetched data
+                if (fetchedData) {
+                    setProjectsList(fetchedData);
+                }
+                toast.success("Projects fetched successfully");
+            } catch (error) {
+                console.error('Error fetching resume data:', error);
+                toast.error("Failed to fetch resume details");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchResumeData();
+    }, [params, getToken]); // Dependencies include params and getToken
+
     const handleChange = (e, index) => {
         const { name, value } = e.target;
         const newProjects = [...projectsList];
@@ -34,7 +69,6 @@ function Projects({ enableNext }) {
             ...resumeInfo,
             projects: newProjects
         });
-        enableNext(false);
     };
 
     const AddProject = () => {
@@ -42,7 +76,8 @@ function Projects({ enableNext }) {
             name: '',
             description: '',
             technologies: '',
-            link: ''
+            link: '',
+            isVerified: false // Default to false for manually added projects
         };
         const updatedProjects = [newProject, ...projectsList];
         setProjectsList(updatedProjects);
@@ -71,7 +106,7 @@ function Projects({ enableNext }) {
                 description: repoData.description || '',
                 technologies: repoData.languages.join(', '),
                 link: repoData.html_url,
-                isVerified: true
+                isVerified: true // Set to true for GitHub-imported projects
             };
             const updatedProjects = [newProject, ...projectsList];
             setProjectsList(updatedProjects);
@@ -98,19 +133,22 @@ function Projects({ enableNext }) {
         };
 
         try {
-            await axios.patch(
-                `http://localhost:5000/api/dashboard/resume/${resumeId}`,
+            const id = params?.resumeId;
+            const token = await getToken();
+            const response = await axios.put(
+                `http://localhost:5000/api/dashboard/resume/${id}/edit`,
                 data,
                 {
                     headers: {
-                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
                     },
                 }
             );
-            enableNext(true);
+            console.log(response);
             toast.success("Projects saved successfully");
         } catch (error) {
+            console.error('Error updating resume:', error);
             toast.error("Failed to save projects");
         } finally {
             setLoading(false);
