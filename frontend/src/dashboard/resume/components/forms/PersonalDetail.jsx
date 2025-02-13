@@ -39,15 +39,15 @@ function PersonalDetail({ enabledNext }) {
                     },
                 });
                 console.log('Response:', response);
-                const fetchedData = response.data?.data?.personalDetails;  
+                const fetchedData = response.data?.data;  
                 console.log('Fetched data:', fetchedData);
 
                 // Set the personal details list from fetched data
-                if (fetchedData) {
-                    setPersonalDetailsList([fetchedData]);
+                if (fetchedData?.personalDetails) {
+                    setPersonalDetailsList([fetchedData.personalDetails]);
                 }
 
-                // Optionally set the resumeInfo context
+                // Update the resumeInfo context with all fetched data
                 setResumeInfo(fetchedData);
             } catch (error) {
                 console.error('Error fetching resume data:', error);
@@ -70,7 +70,7 @@ function PersonalDetail({ enabledNext }) {
     useEffect(() => {
         // Update resumeInfo only when personalDetailsList changes
         setResumeInfo(prevInfo => ({
-            ...prevInfo,
+            ...prevInfo, // Preserve existing data
             personalDetails: personalDetailsList[0] || { ...formField },
         }));
     }, [personalDetailsList, setResumeInfo]); // Add setResumeInfo to dependencies
@@ -80,7 +80,8 @@ function PersonalDetail({ enabledNext }) {
         setLoading(true);
         const data = {
             data: {
-                personalDetails: personalDetailsList[0], // Use the first (and only) entry
+                ...resumeInfo, // Preserve existing resume data
+                personalDetails: personalDetailsList[0], // Update personalDetails
             },
         };
 

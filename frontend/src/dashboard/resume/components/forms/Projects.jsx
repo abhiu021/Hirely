@@ -15,7 +15,7 @@ function Projects({ enableNext }) {
     const { getToken } = useAuth();
     const [projectsList, setProjectsList] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [githubUrl, setGithubUrl] = useState('');
+    const [githubUsername, setGithubUsername] = useState('');
     const [importLoading, setImportLoading] = useState(false);
     const { resumeInfo, setResumeInfo } = useContext(ResumeInfoContext);
 
@@ -96,28 +96,37 @@ function Projects({ enableNext }) {
         });
     };
 
-    const handleGitHubImport = async () => {
+    const fetchGitHubProjects = async () => {
         setImportLoading(true);
         try {
-            const response = await axios.post('/api/github/repo', { url: githubUrl });
-            const repoData = response.data;
-            const newProject = {
-                name: repoData.name,
-                description: repoData.description || '',
-                technologies: repoData.languages.join(', '),
-                link: repoData.html_url,
-                isVerified: true // Set to true for GitHub-imported projects
-            };
-            const updatedProjects = [newProject, ...projectsList];
+            // Fetch repositories for the given GitHub username
+            const response = await axios.get(
+                `https://api.github.com/users/${githubUsername}/repos`
+            );
+            const repos = response.data;
+
+            // Map repositories to the projects format
+            const newProjects = repos.map((repo) => ({
+                name: repo.name,
+                description: repo.description || '',
+                technologies: repo.language || 'Not specified', // GitHub provides primary language
+                link: repo.html_url,
+                isVerified: true, // Mark as verified since it's from GitHub
+            }));
+
+            // Add the new projects to the existing list
+            const updatedProjects = [...newProjects, ...projectsList];
             setProjectsList(updatedProjects);
             setResumeInfo({
                 ...resumeInfo,
-                projects: updatedProjects
+                projects: updatedProjects,
             });
-            setGithubUrl('');
-            toast.success("GitHub project imported successfully");
+
+            setGithubUsername('');
+            toast.success("GitHub projects imported successfully");
         } catch (error) {
-            toast.error("Failed to import GitHub project");
+            console.error('Error fetching GitHub projects:', error);
+            toast.error("Failed to fetch GitHub projects");
         } finally {
             setImportLoading(false);
         }
@@ -170,19 +179,19 @@ function Projects({ enableNext }) {
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
-                                <DialogTitle>Import GitHub Project</DialogTitle>
+                                <DialogTitle>Import GitHub Projects</DialogTitle>
                             </DialogHeader>
                             <div className="space-y-4">
                                 <Input
-                                    placeholder="GitHub repository URL"
-                                    value={githubUrl}
-                                    onChange={(e) => setGithubUrl(e.target.value)}
+                                    placeholder="GitHub Username"
+                                    value={githubUsername}
+                                    onChange={(e) => setGithubUsername(e.target.value)}
                                 />
                                 <Button 
-                                    onClick={handleGitHubImport}
-                                    disabled={importLoading}
+                                    onClick={fetchGitHubProjects}
+                                    disabled={importLoading || !githubUsername}
                                 >
-                                    {importLoading ? <LoaderCircle className="animate-spin mr-2" /> : 'Import'}
+                                    {importLoading ? <LoaderCircle className="animate-spin mr-2" /> : 'Import Projects'}
                                 </Button>
                             </div>
                         </DialogContent>
