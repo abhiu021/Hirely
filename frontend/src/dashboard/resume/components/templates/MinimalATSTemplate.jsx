@@ -3,7 +3,28 @@ import { Mail, Phone, MapPin } from 'lucide-react';
 
 const ATSTemplate = ({ resumeInfo }) => {
   return (
-    <div className="relative max-w-[800pt] mx-auto p-[20pt] box-border bg-white text-black font-[Arial, sans-serif] leading-[1.4]">
+    <div className="relative max-w-[800pt] mx-auto p-[20pt] box-border bg-white text-black font-[Arial, sans-serif] leading-[1.4] overflow-hidden">
+      {/* Watermark */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden"
+           style={{
+             zIndex: 999,
+             background: 'repeating-linear-gradient(-45deg, transparent, transparent 100px, rgba(200,200,200,0.1) 100px, rgba(200,200,200,0.1) 200px)',
+           }}>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform rotate-[-30deg] whitespace-nowrap"
+             style={{
+               fontSize: 'clamp(40px, 10vw, 80px)', // Responsive font size
+               color: 'rgba(200,200,200,0.3)',
+               fontWeight: 'bold',
+               userSelect: 'none',
+               maxWidth: '100%', // Ensure text stays within bounds
+               overflow: 'hidden',
+               width: '150%', // Ensure full diagonal coverage
+               textAlign: 'center',
+             }}>
+          UNVERIFIED
+        </div>
+      </div>
+
       {/* Personal Details Header */}
       {resumeInfo?.personalDetails && (
         <header className="text-left mb-[10pt] pb-[4pt] border-b border-black">
