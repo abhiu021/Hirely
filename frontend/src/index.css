@@ -18,6 +18,11 @@
       box-shadow: none;
     }
   }
+  .resume-card:hover {
+    transform: translateY(-4px);
+    transition: transform 0.2s ease-in-out;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
 
   @page{
     size: auto;
@@ -35,6 +40,8 @@
     list-style: decimal;
     padding-left: 2em;
   }
+
+  
 
   ol, ul, menu {
     list-style: disc;

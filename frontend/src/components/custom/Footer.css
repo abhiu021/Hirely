@@ -1,18 +1,18 @@
 html, body {
-    height: 100%; /* Ensure the body takes the full height */
-    margin: 0; /* Remove default margin */
+    height: 100%; 
+    margin: 0; 
 }
 
 body {
     display: flex;
-    flex-direction: column; /* Stack children vertically */
+    flex-direction: column; 
 }
 
 footer {
     background-color: #f8f8f8;
     padding: 20px;
     text-align: center;
-    width: 100%; /* Ensure footer takes full width */
+    width: 100%; 
 }
 
 .footer-container {

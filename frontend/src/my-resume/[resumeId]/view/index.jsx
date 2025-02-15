@@ -14,7 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown , Download } from "lucide-react";
+import { ChevronDown, Download } from "lucide-react";
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -65,7 +65,7 @@ function ViewResume() {
     try {
       setDownloading(true);
       const element = document.getElementById("print-area");
-  
+
       // Generate high-resolution canvas
       const canvas = await html2canvas(element, {
         scale: 3, // High resolution for better text clarity
@@ -75,36 +75,38 @@ function ViewResume() {
         windowWidth: element.scrollWidth,
         windowHeight: element.scrollHeight,
       });
-  
+
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "mm",
         format: "a4",
       });
-  
+
       const imgWidth = 210; // A4 width
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-  
+
       pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
-  
+
       // ✅ Manually add clickable email & phone links
       const links = element.querySelectorAll('a[href^="mailto:"], a[href^="tel:"]');
-  
+
       links.forEach((link) => {
         const href = link.getAttribute("href");
         const rect = link.getBoundingClientRect();
-  
+
         // Convert browser coordinates to PDF coordinates
         const x = (rect.left / window.innerWidth) * imgWidth;
         const y = (rect.top / window.innerHeight) * imgHeight;
         const width = (rect.width / window.innerWidth) * imgWidth;
         const height = (rect.height / window.innerHeight) * imgHeight;
-  
+
         pdf.link(x, y, width, height, { url: href }); // Add clickable area
       });
-  
-      pdf.save(`resume-${resumeId}.pdf`);
+
+      // Use first name for the PDF filename
+      const fileName = `${resumeInfo?.personalDetails?.firstName}_Resume.pdf`;
+      pdf.save(fileName);
       toast.success("Resume downloaded successfully with clickable links!");
     } catch (error) {
       console.error("PDF download error:", error);
@@ -128,20 +130,20 @@ function ViewResume() {
             resume URL with your friends and family.
           </p>
           <div className="flex justify-between items-center px-44 my-10">
-          <Button 
-                        onClick={handleDownloadPDF}
-                        disabled={downloading}
-                        className="flex items-center gap-2"
-                    >
-                        {downloading ? (
-                            <span>Downloading...</span>
-                        ) : (
-                            <>
-                                <Download className="h-4 w-4" />
-                                Download PDF
-                            </>
-                        )}
-                    </Button>
+            <Button
+              onClick={handleDownloadPDF}
+              disabled={downloading}
+              className="flex items-center gap-2"
+            >
+              {downloading ? (
+                <span>Downloading...</span>
+              ) : (
+                <>
+                  <Download className="h-4 w-4" />
+                  Download PDF
+                </>
+              )}
+            </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
