@@ -6,20 +6,24 @@ import { BtnBold, BtnBulletList, BtnClearFormatting, BtnItalic, BtnLink, BtnNumb
 import { AIChatSession } from './../../../../service/AIModal';
 import { toast } from 'sonner';
 
-const PROMPT = 'position title: {positionTitle}, Depends on position title give me 5-7 bullet points for my experience in resume (Please do not add experience level and No JSON array), give me result in HTML tags';
+const PROMPT = `Generate 5-7 concise bullet points for a resume experience section based on this position title: {positionTitle}. 
+Requirements:
+- Only include the bullet points
+- No explanations, headers, or titles
+- without simple HTML <li> tags without <ul> or
+- Avoid experience level mentions
+- Focus on achievements and responsibilities`;
 
-// Utility function to format raw summary into HTML bullet points
 function formatWorkSummary(summary) {
-  const points = summary.split(/",\s*"/); // Split by quotes and commas
-  const formattedPoints = points.map(point => point.replace(/"/g, '').trim()); // Remove quotes and trim whitespace
-  const htmlList = formattedPoints.map(point => `<li>${point}</li>`).join(''); // Wrap each point in <li> tags
-  return `<ul>${htmlList}</ul>`; // Wrap all points in <ul> tags
+  const points = summary.split(/",\s*"/);
+  return points.map(point => point.replace(/"/g, '').trim());
 }
 
 function RichTextEditor({ onRichTextEditorChange, index, defaultValue }) {
   const [value, setValue] = useState(defaultValue || '');
   const { resumeInfo } = useContext(ResumeInfoContext);
   const [loading, setLoading] = useState(false);
+  const [summaryPoints, setSummaryPoints] = useState([]);
 
   const GenerateSummeryFromAI = async () => {
     if (!resumeInfo?.Experience[index]?.title) {
@@ -32,15 +36,20 @@ function RichTextEditor({ onRichTextEditorChange, index, defaultValue }) {
     try {
       const result = await AIChatSession.sendMessage(prompt);
       const resp = result.response.text();
-      const formattedValue = formatWorkSummary(resp); // Format the AI-generated summary
-      setValue(formattedValue);
-      onRichTextEditorChange({ target: { value: formattedValue } }, 'workSummery', index); // Update parent state
+      const formattedPoints = formatWorkSummary(resp);
+      setSummaryPoints(formattedPoints);
     } catch (error) {
       console.error('Error generating summary from AI:', error);
       toast.error('Failed to generate summary');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePointClick = (point) => {
+    const newValue = `${value}<li>${point}</li>`;
+    setValue(newValue);
+    onRichTextEditorChange({ target: { value: newValue } }, 'workSummery', index);
   };
 
   return (
@@ -68,7 +77,7 @@ function RichTextEditor({ onRichTextEditorChange, index, defaultValue }) {
           value={value}
           onChange={(e) => {
             setValue(e.target.value);
-            onRichTextEditorChange(e, 'workSummery', index); // Pass the value to the parent
+            onRichTextEditorChange(e, 'workSummery', index);
           }}
         >
           <Toolbar>
@@ -84,6 +93,24 @@ function RichTextEditor({ onRichTextEditorChange, index, defaultValue }) {
           </Toolbar>
         </Editor>
       </EditorProvider>
+
+      {/* AI Generated Points Section */}
+      {summaryPoints.length > 0 && (
+        <div className="mt-4 p-2 border rounded">
+          <h4 className="text-sm font-medium mb-2">AI Suggestions</h4>
+          <ul className="list-disc pl-4">
+            {summaryPoints.map((point, index) => (
+              <li
+                key={index}
+                className="cursor-pointer hover:bg-gray-100 p-1 rounded text-sm"
+                onClick={() => handlePointClick(point)}
+              >
+                {point}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
