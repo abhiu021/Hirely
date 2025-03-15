@@ -1,31 +1,105 @@
 import React from 'react';
+import { 
+  Shield, 
+  FileCheck, 
+  PanelTop, 
+  Users, 
+  FileText, 
+  Zap 
+} from 'lucide-react';
+import AnimatedSection, { AnimatedStagger } from '../ui/animated-section';
 
+const AdvantageCard = ({ icon: Icon, title, description, index }) => (
+  <div className="group relative bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden">
+    {/* Decorative number in background */}
+    <div className="absolute -bottom-6 -right-6 text-9xl font-bold text-gray-50 opacity-20 select-none transition-transform duration-300 group-hover:scale-110">
+      {index + 1}
+    </div>
+    
+    {/* Icon */}
+    <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center text-blue-600 mb-6 relative z-10">
+      <Icon size={24} />
+    </div>
+    
+    {/* Content */}
+    <h3 className="text-xl font-semibold mb-3 relative z-10">{title}</h3>
+    <p className="text-gray-600 relative z-10">{description}</p>
+  </div>
+);
 
 const AdvantagesSection = () => {
   const advantages = [
-    { id: 1, title: 'Effortless Resume Creation', description: 'Create your resume quickly with pre-formatted sections and bullet points, allowing for easy customization. Save time and focus on showcasing your skills effectively.' },
-    { id: 2, title: 'Showcase Your Portfolio', description: 'Transform your resume into a stunning portfolio that highlights your work and achievements. Use our tools to present your projects and skills in a visually appealing format that impresses potential employers.' },
-    { id: 3, title: 'Diverse Template Options', description: 'Choose from a wide range of resume and cover letter templates to suit your personal style. Whether you prefer traditional or modern designs, we have something for everyone.' },
-    { id: 4, title: 'Data Security', description: 'Your privacy is our priority; all personal information is encrypted and kept confidential. We are committed to protecting your data and never sharing it with third parties.' },
-    { id: 5, title: 'HR Expert Insights', description: 'Access articles and templates reviewed by HR professionals for reliable job application advice. Benefit from expert tips to enhance your resume and interview skills.' },
-    { id: 6, title: 'ATS Optimization', description: 'Our templates are designed to help your resume pass applicant tracking systems with ease. Use the right keywords and formatting to increase your chances of getting noticed.' },
+    { 
+      title: 'Effortless Resume Creation', 
+      description: 'Create your resume quickly with pre-formatted sections and bullet points. Our AI helps you customize and optimize content.', 
+      icon: FileText 
+    },
+    { 
+      title: 'Showcase Your Portfolio', 
+      description: 'Transform your resume into a stunning portfolio that highlights your work and achievements with visually appealing formats.', 
+      icon: PanelTop 
+    },
+    { 
+      title: 'Diverse Template Options', 
+      description: 'Choose from a wide range of professionally designed templates to suit your personal style and career goals.', 
+      icon: FileCheck 
+    },
+    { 
+      title: 'Data Security', 
+      description: 'Your privacy is our priority. All personal information is encrypted and kept confidential with industry-leading security.', 
+      icon: Shield 
+    },
+    { 
+      title: 'HR Expert Insights', 
+      description: 'Access articles and templates reviewed by HR professionals for reliable job application advice and interview preparation.', 
+      icon: Users 
+    },
+    { 
+      title: 'ATS Optimization', 
+      description: 'Our templates are designed to pass applicant tracking systems with optimized keywords and formatting to increase visibility.', 
+      icon: Zap 
+    },
   ];
 
   return (
-    <section className="bg-blue-50 py-16 relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-32 h-32 bg-white rounded-full opacity-50 transform -translate-x-1/2 -translate-y-1/2"></div>
-      <div className="absolute bottom-0 right-0 w-32 h-32 bg-white rounded-full opacity-50 transform translate-x-1/2 translate-y-1/2"></div>
-      <div className="container mx-auto text-center relative z-10">
-        <h2 className="text-3xl font-bold mb-12">The advantages of using the <span className="font-bold text-blue-600">Hirely</span> resume builder</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {advantages.map((advantage) => (
-            <div key={advantage.id} className="relative bg-white p-8 rounded-lg shadow-lg mt-8">
-              <div className="absolute -top-6 -left-6 bg-blue-600 text-white rounded-full h-12 w-12 flex items-center justify-center text-xl font-bold">{advantage.id}</div>
-              <h3 className="text-xl font-semibold mb-2 mt-6">{advantage.title}</h3>
-              <p className="text-gray-700">{advantage.description}</p>
-            </div>
-          ))}
+    <section className="py-24 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-br from-transparent to-blue-50/70"></div>
+      <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200/20 rounded-full blur-3xl"></div>
+      <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-200/20 rounded-full blur-3xl"></div>
+      
+      <div className="container mx-auto relative z-10 px-4 sm:px-6">
+        <div className="text-center mb-16">
+          <AnimatedSection animation="fade-up" delay={100}>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-6 inline-block bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-700">
+              The advantages of using <span className="font-bold">Hirely</span>
+            </h2>
+          </AnimatedSection>
+          
+          <AnimatedSection animation="fade-up" delay={300}>
+            <p className="text-gray-600 max-w-2xl mx-auto mb-4 text-base sm:text-lg">
+              Our resume builder offers powerful features to help you create professional, 
+              eye-catching resumes that get noticed by employers and pass ATS scans.
+            </p>
+          </AnimatedSection>
         </div>
+        
+        <AnimatedStagger
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          animation="fade-up"
+          baseDelay={400}
+          staggerDelay={150}
+        >
+          {advantages.map((advantage, index) => (
+            <AdvantageCard 
+              key={index}
+              title={advantage.title} 
+              description={advantage.description}
+              icon={advantage.icon}
+              index={index}
+            />
+          ))}
+        </AnimatedStagger>
       </div>
     </section>
   );
