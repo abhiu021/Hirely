@@ -8,6 +8,7 @@
     "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install"
   },
   "dependencies": {
+    "pdfjs-dist": "^4.10.38",
     "react-simple-wysiwyg": "^3.2.0"
   }
 }

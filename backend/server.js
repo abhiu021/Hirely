@@ -7,6 +7,8 @@ import connectDB from './db/connectDB.js';
 import resumeRoutes from './routes/resumeRoutes.js';
 import { clerkMiddleware } from '@clerk/express'
 import bodyParser from 'body-parser';
+import adminRoutes from './routes/adminRoutes.js';
+import axios from 'axios'; // Add this line at the top of your backend file
 
 dotenv.config();
 
@@ -54,11 +56,39 @@ app.use(express.json());
 // Routes
 
 app.use('/api/dashboard/', requireAuth(), resumeRoutes);
+app.use('/api/admin/', adminRoutes);
 
+app.post('/validate-link', async (req, res) => {
+  const { link } = req.body;
 
+  // Validate URL format
+  try {
+      new URL(link); // Throws error for invalid URLs
+  } catch (error) {
+      return res.status(400).json({ isValid: false, message: "Invalid URL format" });
+  }
+
+  // Check if the link is accessible
+  try {
+      const response = await axios.get(link, {
+          timeout: 5000,
+      });
+
+      if (response.status === 200) {
+          res.json({ isValid: true });
+      } else {
+          res.json({ isValid: false });
+      }
+  } catch (error) {
+      console.error("Link validation failed:", error);
+      res.status(500).json({ isValid: false, message: "Link validation failed" });
+  }
+});
+
+  
 
 //Connect to database
-connectDB();
+connectDB();  
 
 // Start the server
 

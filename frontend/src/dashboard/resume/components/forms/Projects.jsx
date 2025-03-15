@@ -38,7 +38,6 @@ function Projects({ enableNext }) {
                         'Content-Type': 'application/json',
                     },
                 });
-                console.log('Response:', response);
                 const fetchedData = response.data?.data?.projects;  
                 console.log('Fetched data:', fetchedData);
 
@@ -132,15 +131,67 @@ function Projects({ enableNext }) {
         }
     };
 
+    // Validate project link
+    const validateProjectLink = async (link) => {
+        try {
+            const response = await axios.post('http://localhost:5000/validate-link', {
+                link: link,
+            });
+            return response.data.isValid;
+        } catch (error) {
+            console.error("Link validation failed:", error);
+            return false;
+        }
+    };
+
+    // Verify a project
+    const verifyProject = async (index) => {
+        const project = projectsList[index];
+        if (!project.link) {
+            toast.error("Please provide a project link to verify");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const isValid = await validateProjectLink(project.link);
+            if (isValid) {
+                const updatedProjects = [...projectsList];
+                updatedProjects[index].isVerified = true;
+                setProjectsList(updatedProjects);
+                setResumeInfo({
+                    ...resumeInfo,
+                    projects: updatedProjects,
+                });
+                toast.success("Project verified successfully");
+            } else {
+                toast.error("Invalid project link");
+            }
+        } catch (error) {
+            console.error('Error verifying project:', error);
+            toast.error("Failed to verify project");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const onSave = async (e) => {
         e.preventDefault();
+    
+        // Check if all projects are verified
+        const allProjectsVerified = projectsList.every(project => project.isVerified);
+        if (!allProjectsVerified) {
+            toast.error("Please verify all projects before saving.");
+            return;
+        }
+    
         setLoading(true);
         const data = {
             data: {
                 projects: projectsList
             }
         };
-
+    
         try {
             const id = params?.resumeId;
             const token = await getToken();
@@ -240,14 +291,23 @@ function Projects({ enableNext }) {
                                 />
                             </div>
                         </div>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => RemoveProject(index)}
-                            className="mt-4"
-                        >
-                            Remove Project
-                        </Button>
+                        <div className="flex justify-between mt-4">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => RemoveProject(index)}
+                            >
+                                Remove Project
+                            </Button>
+                            <Button
+                                type="button"
+                                variant={project.isVerified ? "success" : "outline"}
+                                onClick={() => verifyProject(index)}
+                                disabled={project.isVerified}
+                            >
+                                {project.isVerified ? "Verified ✓" : "Verify Project"}
+                            </Button>
+                        </div>
                     </div>
                 ))}
 

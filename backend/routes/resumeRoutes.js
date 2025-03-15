@@ -5,20 +5,30 @@ import {
   getResumeById,
   updateResume,
   deleteResume,
+  uploadResume,
+  checkATSScore,
+  calculateATSScore
+
 } from '../controllers/resumeController.js';
+import multer from 'multer';
 
 const router = express.Router();
 
-// Create a new resume on dashboard 
-// On create button click, a new resume is created
+// Configure Multer for file uploads
+const upload = multer({ dest: 'uploads/' });
+
+// Create a new resume
 router.post('/', createResume);
 
-// Get all resumes for the authenticated user on dashboard
-// After clicking on create button fetch all available resumes for authenticated user
+router.post('/check-ats-score', upload.single('pdf_doc'),  checkATSScore);
+
+// Upload and parse a resume
+router.post('/upload', upload.single('pdf_doc'), uploadResume);
+
+// Get all resumes for the authenticated user
 router.get('/', getUserResumes);
 
 // Fetch a single resume by ID
-// In (dashboard/:resumeId/edit) fetch a resume by ID
 router.get('/resume/:_id/edit', getResumeById);
 
 // Update a resume
