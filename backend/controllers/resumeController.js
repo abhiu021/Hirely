@@ -34,7 +34,6 @@ const storage = multer.diskStorage({
 // Create a new resume
 export const createResume = async (req, res) => {
   try {
-    // console.log('Request data:', req.body); // Log the request data
     const { title, resumeId, userEmail, userName } = req.body.data; // Extract from nested "data" object
     console.log('Request data:'); // Log the request data
     // Validate input
@@ -186,14 +185,21 @@ const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
 export const uploadResume = async (req, res) => {
   try {
-    const { userId } = req.auth; // Get the user ID from the request
-    const user = await clerkClient.users.getUser(userId); // Fetch user details from Clerk
+    // Get the authenticated user's ID from the request
+    const { userId } = getAuth(req);
+
+    // Fetch the user details from Clerk using the userId
+    const user = await clerkClient.users.getUser(userId);
 
     console.log('Authenticated User:', user); // Log the authenticated user
 
     if (!user) {
       return res.status(401).json({ message: 'User not authenticated' });
     }
+
+    // Get user's email and name
+    const userEmail = user.emailAddresses[0].emailAddress;
+    const userName = user.firstName + ' ' + user.lastName;
 
     const { title } = req.body;
     const file = req.file;
@@ -203,48 +209,145 @@ export const uploadResume = async (req, res) => {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    // Read the uploaded file
-    const fileBuffer = fs.readFileSync(file.path);
-    const fileExtension = path.extname(file.originalname).toLowerCase();    let text;
+    try {
+      // Read the uploaded file
+      const fileBuffer = fs.readFileSync(file.path);
+      const fileExtension = path.extname(file.originalname).toLowerCase();
+      let text;
 
-    // Extract text based on file type
-    if (fileExtension === '.pdf') {
-      text = await extractTextFromPdf(fileBuffer);
-    } else if (fileExtension === '.docx') {
-      text = await extractTextFromDocx(fileBuffer);
-    } else {
-      return res.status(400).json({ message: 'Unsupported file type. Only PDF and DOCX are allowed.' });
+      // Extract text based on file type
+      if (fileExtension === '.pdf') {
+        text = await extractTextFromPdf(fileBuffer);
+      } else if (fileExtension === '.docx') {
+        text = await extractTextFromDocx(fileBuffer);
+      } else {
+        return res.status(400).json({ message: 'Unsupported file type. Only PDF and DOCX are allowed.' });
+      }
+
+      // Using try/catch for the AI parsing part
+      let parsedData;
+      try {
+        // Use Google Generative AI to parse the resume
+        parsedData = await parseResumeWithAI(text);
+        console.log('Resume successfully parsed with AI');
+      } catch (parseError) {
+        console.error('Error during AI parsing:', parseError);
+        // Create a minimal parsed data structure
+        parsedData = {
+          name: title || 'Untitled Resume',
+          email: userEmail,
+          phone: '',
+          jobTitle: '',
+          address: '',
+          skills: [],
+          education: [],
+          experience: [],
+          projects: [],
+          summary: 'Please edit this resume to add your details.',
+          themeColor: '#3498db'
+        };
+      }
+
+      // Add additional protection for mapping parsed data
+      let resumeData;
+      try {
+        // Map parsed data to resume schema
+        resumeData = mapParsedDataToSchema(parsedData);
+      } catch (mappingError) {
+        console.error('Error mapping parsed data:', mappingError);
+        // Create a minimal resume data structure
+        resumeData = {
+          title: title || 'Untitled Resume',
+          resumeId: Date.now().toString(),
+          userEmail: userEmail,
+          userName: userName,
+          personalDetails: {
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+            jobTitle: '',
+            address: '',
+            phone: '',
+            email: userEmail,
+          },
+          education: [],
+          Experience: [],
+          skills: [],
+          projects: [],
+          summery: 'Please edit this resume to add your details.',
+          themeColor: '#3498db',
+        };
+      }
+      
+      // Add user information to the resume data
+      resumeData.title = title || resumeData.title || 'Untitled Resume';
+      resumeData.userEmail = userEmail;
+      resumeData.userName = userName;
+
+      // Create a new resume in the database
+      const newResume = new Resume(resumeData);
+
+      // Save the resume to the database
+      await newResume.save();
+
+      // Delete the uploaded file after processing
+      fs.unlinkSync(file.path);
+
+      // Return the created resume with extracted data
+      res.status(201).json({
+        message: 'Resume uploaded and parsed successfully',
+        data: {
+          documentId: newResume._id,
+          extractedData: newResume,
+        },
+      });
+    } catch (fileProcessingError) {
+      console.error('Error processing file:', fileProcessingError);
+      
+      // Even if file processing fails, try to create a minimal resume
+      const resumeData = {
+        title: title || 'Untitled Resume',
+        resumeId: Date.now().toString(),
+        userEmail: userEmail,
+        userName: userName,
+        personalDetails: {
+          firstName: user.firstName || '',
+          lastName: user.lastName || '',
+          jobTitle: '',
+          address: '',
+          phone: '',
+          email: userEmail,
+        },
+        education: [],
+        Experience: [],
+        skills: [],
+        projects: [],
+        summery: 'Please edit this resume to add your details.',
+        themeColor: '#3498db',
+      };
+      
+      // Create and save a minimal resume
+      const newResume = new Resume(resumeData);
+      await newResume.save();
+      
+      // Return the created resume
+      res.status(201).json({
+        message: 'Resume uploaded but parsing had issues. You can edit it manually.',
+        data: {
+          documentId: newResume._id,
+          extractedData: newResume,
+        },
+      });
     }
-
-    // Use Google Generative AI to parse the resume
-    const parsedData = await parseResumeWithAI(text);
-
-    // Map parsed data to resume schema
-    const resumeData = mapParsedDataToSchema(parsedData);
-
-    // Create a new resume in the database
-    const newResume = new Resume(resumeData);
-
-    // Save the resume to the database
-    await newResume.save();
-
-    // Delete the uploaded file after processing
-    fs.unlinkSync(file.path);
-
-    // Return the created resume with extracted data
-    res.status(201).json({
-      message: 'Resume uploaded and parsed successfully',
-      data: {
-        documentId: newResume._id,
-        extractedData: newResume,
-      },
-    });
   } catch (error) {
     console.error('Error uploading resume:', error);
 
     // Delete the uploaded file in case of an error
     if (req.file) {
-      fs.unlinkSync(req.file.path);
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (unlinkError) {
+        console.error('Error deleting temp file:', unlinkError);
+      }
     }
 
     res.status(500).json({ message: 'Internal server error', error: error.message });
@@ -274,6 +377,8 @@ export const calculateATSScore = async (resumeText, jobDescription) => {
       "applicationSuccessRate": "A percentage score (1-100) indicating the likelihood of success."
     }
 
+    Important: The "jobDescriptionMatch" field must be a number between 1 and 100, without any text. For example: 75 not "75%" or "75 percent".
+
     Do not include any additional text or explanations outside the JSON format.
   `;
 
@@ -287,9 +392,32 @@ export const calculateATSScore = async (resumeText, jobDescription) => {
     const jsonEndIndex = responseText.lastIndexOf('}');
     const jsonString = responseText.slice(jsonStartIndex, jsonEndIndex + 1);
 
-    // Parse the cleaned JSON string
-    const atsScore = JSON.parse(jsonString);
-    return atsScore;
+    console.log('AI Response:', jsonString);
+
+    try {
+      // Parse the cleaned JSON string
+      const atsScore = JSON.parse(jsonString);
+      
+      // Validate and clean the ATS score data
+      const cleanedScore = {
+        jobDescriptionMatch: parseFloat(atsScore.jobDescriptionMatch) || 0,
+        missingKeywords: Array.isArray(atsScore.missingKeywords) ? atsScore.missingKeywords : [],
+        profileSummary: atsScore.profileSummary || '',
+        personalizedSuggestions: Array.isArray(atsScore.personalizedSuggestions) ? atsScore.personalizedSuggestions : [],
+        applicationSuccessRate: parseFloat(atsScore.applicationSuccessRate) || 0
+      };
+      
+      return cleanedScore;
+    } catch (parseError) {
+      console.error('Error parsing ATS score JSON:', parseError);
+      return {
+        jobDescriptionMatch: 0,
+        missingKeywords: [],
+        profileSummary: 'Could not analyze profile due to an error.',
+        personalizedSuggestions: ['Try again with a different resume or job description.'],
+        applicationSuccessRate: 0
+      };
+    }
   } catch (error) {
     console.error('Error details:', {
       message: error.message,
@@ -314,6 +442,16 @@ const extractTextFromPDF = async (filePath) => {
 // Route to check ATS score
 export const checkATSScore = async (req, res) => {
   try {
+    // Get the authenticated user's ID from the request
+    const { userId } = getAuth(req);
+
+    // Fetch the user details from Clerk using the userId
+    const user = await clerkClient.users.getUser(userId);
+
+    if (!user) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+
     const { file } = req; // Resume file uploaded by the user
     const { jobDescription } = req.body; // Job description from the request body
 
@@ -322,22 +460,43 @@ export const checkATSScore = async (req, res) => {
       return res.status(400).json({ message: 'Resume file and job description are required' });
     }
 
-    // Extract text from the resume PDF
-    const resumeText = await extractTextFromPDF(file.path);
+    // Read the uploaded file
+    const fileBuffer = fs.readFileSync(file.path);
+    const fileExtension = path.extname(file.originalname).toLowerCase();
+    let resumeText;
+
+    // Extract text based on file type
+    if (fileExtension === '.pdf') {
+      resumeText = await extractTextFromPdf(fileBuffer);
+    } else if (fileExtension === '.docx') {
+      resumeText = await extractTextFromDocx(fileBuffer);
+    } else {
+      return res.status(400).json({ message: 'Unsupported file type. Only PDF and DOCX are allowed.' });
+    }
 
     // Calculate ATS score
     const atsScore = await calculateATSScore(resumeText, jobDescription);
     console.log('ATS Score:', atsScore);
 
+    // Delete the uploaded file after processing
+    fs.unlinkSync(file.path);
+
     // Return the ATS score
     res.status(200).json({
       message: 'ATS score calculated successfully',
       data: {
-        atsScore, // Numerical score between 1 and 100
+        atsScore, // Complete ATS score object
+        jobDescription, // Return the job description as well
       },
     });
   } catch (error) {
     console.error('Error calculating ATS score:', error);
+    
+    // Delete the uploaded file in case of an error
+    if (req.file) {
+      fs.unlinkSync(req.file.path);
+    }
+    
     res.status(500).json({ message: 'Internal server error' });
   }
 };

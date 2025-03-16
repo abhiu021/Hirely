@@ -14,6 +14,7 @@ import EditResume from './dashboard/resume/[resumeId]/edit/index.jsx'
 import ViewResume from './my-resume/[resumeId]/view/index.jsx'
 import Blog from './pages/Blog.jsx'
 import BlogPost from './pages/BlogPost.jsx'
+import ATSScoreResult from './dashboard/ats-score-result/index.jsx'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
       {
         path:'/dashboard/resume/:resumeId/edit',
         element:<EditResume/>
+      },
+      {
+        path:'/dashboard/ats-score-result',
+        element:<ATSScoreResult/>
       },
       {
         path: '/admin/dashboard',
