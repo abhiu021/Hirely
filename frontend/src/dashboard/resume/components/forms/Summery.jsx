@@ -25,7 +25,7 @@ function Summery({ enabledNext }) {
             try {
                 const id = params?.resumeId; // Get the resume ID from URL params
                 const token = await getToken(); // Get the authorization token
-                const response = await axios.get(`http://localhost:5000/api/dashboard/resume/${id}/edit`, {
+                const response = await axios.get(`https://hirely-78iq.onrender.com/api/dashboard/resume/${id}/edit`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ function Summery({ enabledNext }) {
         try {
             const id = params?.resumeId;
             const token = await getToken();
-            const response = await axios.put(`http://localhost:5000/api/dashboard/resume/${id}/edit`, data, {
+            const response = await axios.put(`https://hirely-78iq.onrender.com/api/dashboard/resume/${id}/edit`, data, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,

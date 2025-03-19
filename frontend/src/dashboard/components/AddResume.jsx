@@ -37,7 +37,7 @@ function AddResume() {
     try {
       const token = await getToken();
       console.log('Token:', token);
-      const response = await axios.post('http://localhost:5000/api/dashboard/', data, {
+      const response = await axios.post('https://hirely-78iq.onrender.com/api/dashboard/', data, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,

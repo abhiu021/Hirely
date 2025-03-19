@@ -18,7 +18,7 @@ function EditUser() {
   const fetchUser = async () => {
     try {
       const token = await getToken();
-      const response = await axios.get(`http://localhost:5000/api/admin/users/${userId}`, {
+      const response = await axios.get(`https://hirely-78iq.onrender.com/api/admin/users/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ function EditUser() {
     try {
       const token = await getToken();
       await axios.put(
-        `http://localhost:5000/api/admin/users/${userId}`,
+        `https://hirely-78iq.onrender.com/api/admin/users/${userId}`,
         { ...user },
         {
           headers: {

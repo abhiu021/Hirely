@@ -44,7 +44,7 @@ function AdminDashboard() {
     setLoading(true);
     try {
       const token = await getToken();
-      const response = await axios.get('http://localhost:5000/api/admin/users', {
+      const response = await axios.get('https://hirely-78iq.onrender.com/api/admin/users', {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ function AdminDashboard() {
     setLoading(true);
     try {
       const token = await getToken();
-      const response = await axios.get('http://localhost:5000/api/admin/resumes', {
+      const response = await axios.get('https://hirely-78iq.onrender.com/api/admin/resumes', {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ function AdminDashboard() {
   const handleDeleteUser = async (userId) => {
     try {
       const token = await getToken();
-      await axios.delete(`http://localhost:5000/api/admin/users/${userId}`, {
+      await axios.delete(`https://hirely-78iq.onrender.com/api/admin/users/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -124,7 +124,7 @@ function AdminDashboard() {
     try {
       const token = await getToken();
       const response = await axios.post(
-        'http://localhost:5000/api/admin/users',
+        'https://hirely-78iq.onrender.com/api/admin/users',
         { ...newUser },
         {
           headers: {
@@ -155,7 +155,7 @@ function AdminDashboard() {
   const handleDeleteResume = async (resumeId) => {
     try {
       const token = await getToken();
-      await axios.delete(`http://localhost:5000/api/admin/resumes/${resumeId}`, {
+      await axios.delete(`https://hirely-78iq.onrender.com/api/admin/resumes/${resumeId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -176,7 +176,7 @@ function AdminDashboard() {
     try {
       const token = await getToken();
       await axios.post(
-        'http://localhost:5000/api/admin/resumes/bulk-delete',
+        'https://hirely-78iq.onrender.com/api/admin/resumes/bulk-delete',
         { resumeIds: selectedResumes },
         {
           headers: {

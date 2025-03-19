@@ -35,7 +35,7 @@ function Education() {
       try {
         const id = params?.resumeId; // Get the resume ID from URL params
         const token = await getToken(); // Get the authorization token
-        const response = await axios.get(`http://localhost:5000/api/dashboard/resume/${id}/edit`, {
+        const response = await axios.get(`https://hirely-78iq.onrender.com/api/dashboard/resume/${id}/edit`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -118,7 +118,7 @@ function Education() {
       setDialogOpen(true);
       
       // Try to save in the background
-      axios.put(`http://localhost:5000/api/dashboard/resume/${id}/edit`, data, {
+      axios.put(`https://hirely-78iq.onrender.com/api/dashboard/resume/${id}/edit`, data, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -175,7 +175,7 @@ function Education() {
       
       // Use our education certificate endpoint
       const response = await axios.post(
-        'http://localhost:5000/api/certificates/education',
+        'https://hirely-78iq.onrender.com/api/certificates/education',
         formData,
         {
           headers: {
@@ -282,7 +282,7 @@ function Education() {
     try {
       const id = params?.resumeId;
       const token = await getToken();
-      const response = await axios.put(`http://localhost:5000/api/dashboard/resume/${id}/edit`, data, {
+      const response = await axios.put(`https://hirely-78iq.onrender.com/api/dashboard/resume/${id}/edit`, data, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,

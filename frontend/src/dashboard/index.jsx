@@ -37,7 +37,7 @@ function Dashboard() {
     setLoadingResumes(true);
     try {
       const token = await getToken();
-      const response = await axios.get('http://localhost:5000/api/dashboard/', {
+      const response = await axios.get('https://hirely-78iq.onrender.com/api/dashboard/', {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ function Dashboard() {
 
     try {
       const token = await getToken();
-      const response = await axios.post('http://localhost:5000/api/dashboard/upload', formData, {
+      const response = await axios.post('https://hirely-78iq.onrender.com/api/dashboard/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -93,7 +93,7 @@ function Dashboard() {
 
     try {
       const token = await getToken();
-      const response = await axios.post('http://localhost:5000/api/dashboard/check-ats-score', formData, {
+      const response = await axios.post('https://hirely-78iq.onrender.com/api/dashboard/check-ats-score', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,

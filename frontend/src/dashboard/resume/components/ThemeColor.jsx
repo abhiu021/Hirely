@@ -39,7 +39,7 @@ function ThemeColor() {
     try {
       const id = params?.resumeId;
       const token = await getToken();
-      const response = await axios.put(`http://localhost:5000/api/dashboard/resume/${id}/edit`, data, {
+      const response = await axios.put(`https://hirely-78iq.onrender.com/api/dashboard/resume/${id}/edit`, data, {
           headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,

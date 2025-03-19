@@ -39,7 +39,7 @@ function ViewResume() {
     try {
       const token = await getToken(); // Get the authorization token
       const response = await axios.get(
-        `http://localhost:5000/api/dashboard/resume/${resumeId}/edit`,
+        `https://hirely-78iq.onrender.com/api/dashboard/resume/${resumeId}/edit`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

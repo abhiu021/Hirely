@@ -53,7 +53,7 @@ function Experience() {
             try {
                 const id = params?.resumeId;
                 const token = await getToken();
-                const response = await axios.get(`http://localhost:5000/api/dashboard/resume/${id}/edit`, {
+                const response = await axios.get(`https://hirely-78iq.onrender.com/api/dashboard/resume/${id}/edit`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ function Experience() {
             const id = params?.resumeId;
             const token = await getToken();
             
-            await axios.put(`http://localhost:5000/api/dashboard/resume/${id}/edit`, data, {
+            await axios.put(`https://hirely-78iq.onrender.com/api/dashboard/resume/${id}/edit`, data, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
@@ -142,7 +142,7 @@ function Experience() {
             
             const token = await getToken();
             const response = await axios.post(
-                'http://localhost:5000/api/certificates/experience',
+                'https://hirely-78iq.onrender.com/api/certificates/experience',
                 formData,
                 {
                     headers: {
@@ -195,7 +195,7 @@ function Experience() {
         try {
             const id = params?.resumeId;
             const token = await getToken();
-            await axios.put(`http://localhost:5000/api/dashboard/resume/${id}/edit`, {
+            await axios.put(`https://hirely-78iq.onrender.com/api/dashboard/resume/${id}/edit`, {
                 data: { Experience: experinceList }
             }, {
                 headers: {
