@@ -70,12 +70,21 @@ function AdminDashboard() {
           'Content-Type': 'application/json',
         },
       });
-      console.log('Resumes:', response.data.data);
-      setResumes(response.data.data);
-      // console.log('Resumes:', response.data.data);
+      console.log('API Response:', response);
+      console.log('Resumes Data:', response.data);
       
+      // Check if the data is in the expected format
+      if (response.data && Array.isArray(response.data.data)) {
+        setResumes(response.data.data);
+        console.log('Set Resumes:', response.data.data);
+      } else {
+        console.error('Unexpected data format:', response.data);
+        setResumes([]);
+        toast.error('Invalid resume data format received');
+      }
     } catch (error) {
       console.error('Error fetching resumes:', error);
+      setResumes([]);
       toast.error('Failed to fetch resumes');
     } finally {
       setLoading(false);
@@ -143,20 +152,6 @@ function AdminDashboard() {
     }
   };
 
-  const handleDownloadResume = (resumeId, format) => {
-    // Implement download logic here
-    toast.success(`Downloading resume ${resumeId} in ${format} format`);
-  };
-
-  const handleBulkDownload = () => {
-    if (selectedResumes.length === 0) {
-      toast.error('No resumes selected for download');
-      return;
-    }
-    // Implement bulk download logic here
-    toast.success(`Downloading ${selectedResumes.length} resumes`);
-  };
-
   const handleDeleteResume = async (resumeId) => {
     try {
       const token = await getToken();
@@ -208,345 +203,416 @@ function AdminDashboard() {
   });
 
   const filteredResumes = resumes.filter((resume) => {
-    const matchesSearch = resume.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          resume.userName.toLowerCase().includes(searchQuery.toLowerCase());
+    // Log each resume being filtered
+    console.log('Filtering resume:', resume);
+    
+    // Basic validation of resume object
+    if (!resume || typeof resume !== 'object') {
+      console.log('Invalid resume object:', resume);
+      return false;
+    }
 
-    const matchesUser = !resumeFilters.user || resume.userName === resumeFilters.user;
-    const matchesUploadDate = !resumeFilters.uploadDate || resume.uploadDate === resumeFilters.uploadDate;
-    const matchesStatus = !resumeFilters.status || resume.status === resumeFilters.status;
-    const matchesAtsScore = resume.atsScore >= resumeFilters.atsScoreRange.min &&
-                            resume.atsScore <= resumeFilters.atsScoreRange.max;
+    const matchesSearch = !searchQuery || 
+      (resume.title && resume.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (resume.userName && resume.userName.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    return matchesSearch && matchesUser && matchesUploadDate && matchesStatus && matchesAtsScore;
+    const matchesUser = !resumeFilters.user || 
+      (resume.userName && resume.userName === resumeFilters.user);
+    
+    const matchesUploadDate = !resumeFilters.uploadDate || 
+      (resume.uploadDate && resume.uploadDate === resumeFilters.uploadDate);
+    
+    const matchesStatus = !resumeFilters.status || 
+      (resume.status && resume.status === resumeFilters.status);
+    
+    const matchesAtsScore = !resume.atsScore || 
+      (resume.atsScore >= resumeFilters.atsScoreRange.min &&
+       resume.atsScore <= resumeFilters.atsScoreRange.max);
+
+    const shouldInclude = matchesSearch && matchesUser && matchesUploadDate && matchesStatus && matchesAtsScore;
+    console.log('Resume included:', shouldInclude, 'for resume:', resume.title);
+    
+    return shouldInclude;
   });
 
+  // Add useEffect to log state changes
+  useEffect(() => {
+    console.log('Current resumes state:', resumes);
+    console.log('Current filtered resumes:', filteredResumes);
+    console.log('Current filters:', resumeFilters);
+    console.log('Current search query:', searchQuery);
+  }, [resumes, filteredResumes, resumeFilters, searchQuery]);
+
+  console.log('Filtered Resumes:', filteredResumes);
+
   return (
-    <div className='p-8 bg-gray-50 min-h-screen'>
-      <div className='max-w-7xl mx-auto'>
-        <h1 className='text-3xl font-bold text-gray-900 mb-8'>Admin Dashboard</h1>
-        <div className='bg-white p-6 rounded-xl shadow-sm border border-gray-100'>
-          <h2 className='text-xl font-semibold text-gray-900 mb-4'>Welcome, {user?.fullName}</h2>
-          <p className='text-gray-600'>You have access to admin-specific features.</p>
+    <div className="font-roboto min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 overflow-hidden">
+      <div className="relative w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-24">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl"></div>
+        </div>
 
-          {/* Tabs */}
-          <div className='flex gap-4 mb-6'>
-            <button
-              onClick={() => setActiveTab('users')}
-              className={`px-4 py-2 rounded-md ${activeTab === 'users' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
-            >
-              Users
-            </button>
-            <button
-              onClick={() => setActiveTab('resumes')}
-              className={`px-4 py-2 rounded-md ${activeTab === 'resumes' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
-            >
-              Resume Management
-            </button>
+        <div className="relative z-10">
+          <h1 className="text-4xl font-bold text-gray-900 mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+            Admin Dashboard
+          </h1>
+          
+          <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 p-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Welcome, {user?.fullName}</h2>
+            <p className="text-gray-600 mb-8">You have access to admin-specific features.</p>
+
+            {/* Tabs */}
+            <div className="flex gap-4 mb-8">
+              <button
+                onClick={() => setActiveTab('users')}
+                className={`px-6 py-2.5 rounded-full transition-all duration-200 ${
+                  activeTab === 'users' 
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/20' 
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                }`}
+              >
+                Users
+              </button>
+              <button
+                onClick={() => setActiveTab('resumes')}
+                className={`px-6 py-2.5 rounded-full transition-all duration-200 ${
+                  activeTab === 'resumes' 
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/20' 
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                }`}
+              >
+                Resume Management
+              </button>
+            </div>
+
+            {/* Users Tab */}
+            {activeTab === 'users' && (
+              <div className="mt-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-6">Users</h3>
+
+                {/* Search Bar and Filters */}
+                <div className="flex flex-wrap gap-4 mb-6">
+                  <input
+                    type="text"
+                    placeholder="Search users..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                    style={{ maxWidth: '300px' }}
+                  />
+                  <select
+                    value={filters.role}
+                    onChange={(e) => setFilters({ ...filters, role: e.target.value })}
+                    className="p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                  >
+                    <option value="all">All Roles</option>
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                  <button
+                    onClick={() => setShowCreateUserModal(true)}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg shadow-blue-500/20 ml-auto"
+                  >
+                    Add User
+                  </button>
+                </div>
+
+                {/* Display Users */}
+                {loading ? (
+                  <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                  </div>
+                ) : filteredUsers.length > 0 ? (
+                  <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="bg-gray-50">
+                          <th className="p-4 text-left text-sm font-medium text-gray-600">Name</th>
+                          <th className="p-4 text-left text-sm font-medium text-gray-600">Email</th>
+                          <th className="p-4 text-left text-sm font-medium text-gray-600">Role</th>
+                          <th className="p-4 text-left text-sm font-medium text-gray-600">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredUsers.map((user) => (
+                          <tr key={user.id} className="border-t border-gray-100 hover:bg-gray-50 transition-colors duration-200">
+                            <td className="p-4">{user.fullName}</td>
+                            <td className="p-4">{user.email}</td>
+                            <td className="p-4">
+                              <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                                user.role === 'admin' 
+                                  ? 'bg-purple-100 text-purple-700' 
+                                  : 'bg-blue-100 text-blue-700'
+                              }`}>
+                                {user.role}
+                              </span>
+                            </td>
+                            <td className="p-4">
+                              <button
+                                onClick={() => handleEditUser(user.id)}
+                                className="bg-blue-500 text-white px-4 py-1.5 rounded-lg mr-2 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDeleteUser(user.id)}
+                                className="bg-red-500 text-white px-4 py-1.5 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500/20 transition-all duration-200"
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500">No users found.</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Resume Management Tab */}
+            {activeTab === 'resumes' && (
+              <div className="mt-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-6">Resume Management</h3>
+
+                {/* Search Bar and Filters */}
+                <div className="flex flex-wrap gap-4 mb-6">
+                  <input
+                    type="text"
+                    placeholder="Search resumes..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                    style={{ maxWidth: '300px' }}
+                  />
+                  <select
+                    value={resumeFilters.user}
+                    onChange={(e) => setResumeFilters({ ...resumeFilters, user: e.target.value })}
+                    className="p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                  >
+                    <option value="">All Users</option>
+                    {users.map((user) => (
+                      <option key={user.id} value={user.fullName}>
+                        {user.fullName}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="date"
+                    value={resumeFilters.uploadDate}
+                    onChange={(e) => setResumeFilters({ ...resumeFilters, uploadDate: e.target.value })}
+                    className="p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                  />
+                  <select
+                    value={resumeFilters.status}
+                    onChange={(e) => setResumeFilters({ ...resumeFilters, status: e.target.value })}
+                    className="p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                  >
+                    <option value="">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      placeholder="Min ATS Score"
+                      value={resumeFilters.atsScoreRange.min}
+                      onChange={(e) =>
+                        setResumeFilters({
+                          ...resumeFilters,
+                          atsScoreRange: { ...resumeFilters.atsScoreRange, min: e.target.value },
+                        })
+                      }
+                      className="p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 w-32"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Max ATS Score"
+                      value={resumeFilters.atsScoreRange.max}
+                      onChange={(e) =>
+                        setResumeFilters({
+                          ...resumeFilters,
+                          atsScoreRange: { ...resumeFilters.atsScoreRange, max: e.target.value },
+                        })
+                      }
+                      className="p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 w-32"
+                    />
+                  </div>
+                </div>
+
+                {/* Bulk Actions */}
+                <div className="flex gap-4 mb-6">
+                  <button
+                    onClick={handleBulkDelete}
+                    className="bg-red-500 text-white px-6 py-2.5 rounded-full hover:bg-red-600 transition-all duration-200 shadow-lg shadow-red-500/20"
+                  >
+                    Bulk Delete
+                  </button>
+                </div>
+
+                {/* Display Resumes */}
+                {loading ? (
+                  <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                  </div>
+                ) : filteredResumes.length > 0 ? (
+                  <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="bg-gray-50">
+                          <th className="p-4 text-left">
+                            <input
+                              type="checkbox"
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedResumes(filteredResumes.map((resume) => resume._id));
+                                } else {
+                                  setSelectedResumes([]);
+                                }
+                              }}
+                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500/20"
+                            />
+                          </th>
+                          <th className="p-4 text-left text-sm font-medium text-gray-600">Title</th>
+                          <th className="p-4 text-left text-sm font-medium text-gray-600">User Name</th>
+                          <th className="p-4 text-left text-sm font-medium text-gray-600">Upload Date</th>
+                          <th className="p-4 text-left text-sm font-medium text-gray-600">Status</th>
+                          <th className="p-4 text-left text-sm font-medium text-gray-600">ATS Score</th>
+                          <th className="p-4 text-left text-sm font-medium text-gray-600">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredResumes.map((resume) => (
+                          <tr key={resume._id} className="border-t border-gray-100 hover:bg-gray-50 transition-colors duration-200">
+                            <td className="p-4">
+                              <input
+                                type="checkbox"
+                                checked={selectedResumes.includes(resume._id)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedResumes([...selectedResumes, resume._id]);
+                                  } else {
+                                    setSelectedResumes(selectedResumes.filter((id) => id !== resume._id));
+                                  }
+                                }}
+                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500/20"
+                              />
+                            </td>
+                            <td className="p-4">{resume.title}</td>
+                            <td className="p-4">{resume.userName}</td>
+                            <td className="p-4">{resume.uploadDate}</td>
+                            <td className="p-4">
+                              <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                                resume.status === 'approved' 
+                                  ? 'bg-green-100 text-green-700'
+                                  : resume.status === 'rejected'
+                                  ? 'bg-red-100 text-red-700'
+                                  : 'bg-yellow-100 text-yellow-700'
+                              }`}>
+                                {resume.status}
+                              </span>
+                            </td>
+                            <td className="p-4">{resume.atsScore}</td>
+                            <td className="p-4">
+                              <button
+                                onClick={() => handleDeleteResume(resume.id)}
+                                className="bg-red-500 text-white px-4 py-1.5 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500/20 transition-all duration-200"
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500">No resumes found.</p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-
-          {/* Users Tab */}
-          {activeTab === 'users' && (
-            <div className='mt-6'>
-              <div className='flex justify-between items-center mb-4'>
-                <h3 className='text-xl font-semibold text-gray-900'>Users</h3>
-                <button
-                  onClick={() => setShowCreateUserModal(true)}
-                  className='bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500'
-                >
-                  Add User
-                </button>
-              </div>
-
-              {/* Search Bar and Filters */}
-              <div className='flex gap-4 mb-6'>
-                <input
-                  type='text'
-                  placeholder='Search users...'
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className='w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  style={{ maxWidth: '300px' }}
-                />
-                <select
-                  value={filters.role}
-                  onChange={(e) => setFilters({ ...filters, role: e.target.value })}
-                  className='p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-                >
-                  <option value='all'>All Roles</option>
-                  <option value='user'>User</option>
-                  <option value='admin'>Admin</option>
-                </select>
-              </div>
-
-              {/* Display Users */}
-              {loading ? (
-                <p>Loading...</p>
-              ) : filteredUsers.length > 0 ? (
-                <table className='w-full border-collapse'>
-                  <thead>
-                    <tr className='bg-gray-100'>
-                      <th className='p-3 text-left'>Name</th>
-                      <th className='p-3 text-left'>Email</th>
-                      <th className='p-3 text-left'>Role</th>
-                      <th className='p-3 text-left'>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredUsers.map((user) => (
-                      <tr key={user.id} className='border-b'>
-                        <td className='p-3'>{user.fullName}</td>
-                        <td className='p-3'>{user.email}</td>
-                        <td className='p-3'>{user.role}</td>
-                        <td className='p-3'>
-                          <button
-                            onClick={() => handleEditUser(user.id)}
-                            className='bg-blue-500 text-white px-3 py-1 rounded-md mr-2 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500'
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteUser(user.id)}
-                            className='bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500'
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <p>No users found.</p>
-              )}
-            </div>
-          )}
-
-          {/* Resume Management Tab */}
-          {activeTab === 'resumes' && (
-            <div className='mt-6'>
-              <h3 className='text-xl font-semibold text-gray-900 mb-4'>Resume Management</h3>
-
-              {/* Search Bar and Filters */}
-              <div className='flex gap-4 mb-6'>
-                <input
-                  type='text'
-                  placeholder='Search resumes...'
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className='w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  style={{ maxWidth: '300px' }}
-                />
-                <select
-                  value={resumeFilters.user}
-                  onChange={(e) => setResumeFilters({ ...resumeFilters, user: e.target.value })}
-                  className='p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-                >
-                  <option value=''>All Users</option>
-                  {users.map((user) => (
-                    <option key={user.id} value={user.fullName}>
-                      {user.fullName}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  type='date'
-                  value={resumeFilters.uploadDate}
-                  onChange={(e) => setResumeFilters({ ...resumeFilters, uploadDate: e.target.value })}
-                  className='p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-                />
-                <select
-                  value={resumeFilters.status}
-                  onChange={(e) => setResumeFilters({ ...resumeFilters, status: e.target.value })}
-                  className='p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-                >
-                  <option value=''>All Statuses</option>
-                  <option value='pending'>Pending</option>
-                  <option value='approved'>Approved</option>
-                  <option value='rejected'>Rejected</option>
-                </select>
-                <input
-                  type='number'
-                  placeholder='Min ATS Score'
-                  value={resumeFilters.atsScoreRange.min}
-                  onChange={(e) =>
-                    setResumeFilters({
-                      ...resumeFilters,
-                      atsScoreRange: { ...resumeFilters.atsScoreRange, min: e.target.value },
-                    })
-                  }
-                  className='p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-                />
-                <input
-                  type='number'
-                  placeholder='Max ATS Score'
-                  value={resumeFilters.atsScoreRange.max}
-                  onChange={(e) =>
-                    setResumeFilters({
-                      ...resumeFilters,
-                      atsScoreRange: { ...resumeFilters.atsScoreRange, max: e.target.value },
-                    })
-                  }
-                  className='p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-                />
-              </div>
-
-              {/* Bulk Actions */}
-              <div className='flex gap-4 mb-6'>
-                <button
-                  onClick={handleBulkDownload}
-                  className='bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500'
-                >
-                  Bulk Download
-                </button>
-                <button
-                  onClick={handleBulkDelete}
-                  className='bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500'
-                >
-                  Bulk Delete
-                </button>
-              </div>
-
-              {/* Display Resumes */}
-              {loading ? (
-                <p>Loading...</p>
-              ) : filteredResumes.length > 0 ? (
-                <table className='w-full border-collapse'>
-                  <thead>
-                    <tr className='bg-gray-100'>
-                      <th className='p-3 text-left'>
-                        <input
-                          type='checkbox'
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedResumes(filteredResumes.map((resume) => resume.id));
-                            } else {
-                              setSelectedResumes([]);
-                            }
-                          }}
-                        />
-                      </th>
-                      <th className='p-3 text-left'>Title</th>
-                      <th className='p-3 text-left'>User Name</th>
-                      <th className='p-3 text-left'>Upload Date</th>
-                      <th className='p-3 text-left'>Status</th>
-                      <th className='p-3 text-left'>ATS Score</th>
-                      <th className='p-3 text-left'>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredResumes.map((resume) => (
-                      <tr key={resume.id} className='border-b'>
-                        <td className='p-3'>
-                          <input
-                            type='checkbox'
-                            checked={selectedResumes.includes(resume.id)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setSelectedResumes([...selectedResumes, resume.id]);
-                              } else {
-                                setSelectedResumes(selectedResumes.filter((id) => id !== resume.id));
-                              }
-                            }}
-                          />
-                        </td>
-                        <td className='p-3'>{resume.title}</td>
-                        <td className='p-3'>{resume.userName}</td>
-                        <td className='p-3'>{resume.uploadDate}</td>
-                        <td className='p-3'>{resume.status}</td>
-                        <td className='p-3'>{resume.atsScore}</td>
-                        <td className='p-3'>
-                          <button
-                            onClick={() => handleDownloadResume(resume.id, 'PDF')}
-                            className='bg-blue-500 text-white px-3 py-1 rounded-md mr-2 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500'
-                          >
-                            Download PDF
-                          </button>
-                          <button
-                            onClick={() => handleDeleteResume(resume.id)}
-                            className='bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500'
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <p>No resumes found.</p>
-              )}
-            </div>
-          )}
         </div>
       </div>
 
       {/* Create User Modal */}
       {showCreateUserModal && (
-        <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center'>
-          <div className='bg-white p-6 rounded-xl w-96'>
-            <h2 className='text-xl font-semibold mb-4'>Create User</h2>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white rounded-2xl p-8 w-full max-w-md shadow-xl">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-6">Create User</h2>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 handleCreateUser();
               }}
             >
-              <div className='mb-4'>
-                <label className='block text-gray-700'>Full Name</label>
-                <input
-                  type='text'
-                  value={newUser.fullName}
-                  onChange={(e) => setNewUser({ ...newUser, fullName: e.target.value })}
-                  className='w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  required
-                />
-                {errors.fullName && <p className='text-red-500 text-sm'>{errors.fullName}</p>}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                  <input
+                    type="text"
+                    value={newUser.fullName}
+                    onChange={(e) => setNewUser({ ...newUser, fullName: e.target.value })}
+                    className="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                    required
+                  />
+                  {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={newUser.email}
+                    onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                    className="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                    required
+                  />
+                  {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                  <input
+                    type="password"
+                    value={newUser.password}
+                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                    className="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                    required
+                  />
+                  {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                  <select
+                    value={newUser.role}
+                    onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                    className="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                  >
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                  {errors.role && <p className="text-red-500 text-sm mt-1">{errors.role}</p>}
+                </div>
               </div>
-              <div className='mb-4'>
-                <label className='block text-gray-700'>Email</label>
-                <input
-                  type='email'
-                  value={newUser.email}
-                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                  className='w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  required
-                />
-                {errors.email && <p className='text-red-500 text-sm'>{errors.email}</p>}
-              </div>
-              <div className='mb-4'>
-                <label className='block text-gray-700'>Password</label>
-                <input
-                  type='password'
-                  value={newUser.password}
-                  onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                  className='w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  required
-                />
-                {errors.password && <p className='text-red-500 text-sm'>{errors.password}</p>}
-              </div>
-              <div className='mb-4'>
-                <label className='block text-gray-700'>Role</label>
-                <select
-                  value={newUser.role}
-                  onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                  className='w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-                >
-                  <option value='user'>User</option>
-                  <option value='admin'>Admin</option>
-                </select>
-                {errors.role && <p className='text-red-500 text-sm'>{errors.role}</p>}
-              </div>
-              <div className='flex justify-end'>
+              <div className="flex justify-end gap-4 mt-6">
                 <button
-                  type='button'
+                  type="button"
                   onClick={() => setShowCreateUserModal(false)}
-                  className='bg-gray-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500'
+                  className="px-6 py-2.5 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-50 transition-all duration-200"
                 >
                   Cancel
                 </button>
                 <button
-                  type='submit'
-                  className='bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500'
+                  type="submit"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg shadow-blue-500/20"
                 >
                   Create
                 </button>

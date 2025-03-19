@@ -133,7 +133,7 @@ export const updateResume = async (req, res) => {
       return res.status(400).json({ message: 'Resume ID is required' });
     }
 
-    if (!updateData) {
+    if(!updateData){
       return res.status(400).json({ message: 'Update data is required' });
     }
 
@@ -154,6 +154,7 @@ export const updateResume = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 // Delete a resume
 export const deleteResume = async (req, res) => {

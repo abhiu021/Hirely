@@ -5,6 +5,7 @@ import cors from 'cors';
 import { clerkClient, requireAuth } from '@clerk/express' // Corrected Clerk middleware import
 import connectDB from './db/connectDB.js';
 import resumeRoutes from './routes/resumeRoutes.js';
+import certificateRoutes from './routes/certificateRoutes.js';
 import { clerkMiddleware } from '@clerk/express'
 import bodyParser from 'body-parser';
 import adminRoutes from './routes/adminRoutes.js';
@@ -21,7 +22,7 @@ app.use(cors());
 app.use(clerkMiddleware())
 app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));
-// app.use('/files', express.static('files')); // Make folder static
+app.use('/uploads', express.static('uploads')); // Make uploads folder static
 
 // MongoDB Connection
 // mongoose.connect(process.env.MONGO_URI, {
@@ -57,6 +58,7 @@ app.use(express.json());
 
 app.use('/api/dashboard/', requireAuth(), resumeRoutes);
 app.use('/api/admin/', adminRoutes);
+app.use('/api/certificates/', certificateRoutes);
 
 app.post('/validate-link', async (req, res) => {
   const { link } = req.body;
@@ -86,7 +88,7 @@ app.post('/validate-link', async (req, res) => {
 });
 
   
-
+ 
 //Connect to database
 connectDB();  
 

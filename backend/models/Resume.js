@@ -21,9 +21,24 @@ const resumeSchema = new mongoose.Schema({
       startDate: String,
       endDate: String,
       description: String,
+      
+      verification: {
+        status: {
+          type: String,
+          enum: ['pending', 'approved', 'rejected', null],
+          default: null
+        },
+        documentUrl: String,
+        submittedAt: Date,
+        method: {
+          type: String,
+          enum: ['document', 'linkedin', null],
+          default: null
+        }
+      }
     },
   ],
-  experience: [
+  Experience: [
     {
       title: String,
       companyName: String,
@@ -31,7 +46,19 @@ const resumeSchema = new mongoose.Schema({
       state: String,
       startDate: String,
       endDate: String,
-      workSummary: String,
+      workSummery: String,
+      certificate: {
+        fileUrl: String,
+        fileName: String,
+        uploaded: {
+          type: Boolean,
+          default: false
+        },
+        uploadDate: {
+          type: Date,
+          default: Date.now
+        }
+      }
     },
   ],
   skills: [
@@ -49,7 +76,7 @@ const resumeSchema = new mongoose.Schema({
       isVerified: { type: Boolean, default: false },
     },
   ],
-  summary: { type: String }, // Summary of the resume
+  summery: { type: String }, // Summary of the resume
   themeColor: String, // Theme color for the resume
   status: {
     type: String,

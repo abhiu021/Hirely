@@ -35,7 +35,6 @@ function AddResume() {
     };
 
     try {
-      console.log('Data:', data);
       const token = await getToken();
       console.log('Token:', token);
       const response = await axios.post('http://localhost:5000/api/dashboard/', data, {

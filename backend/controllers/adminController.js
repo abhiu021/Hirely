@@ -43,14 +43,11 @@ export const getAllResumes = async (req, res) => {
       // Log the fetched resumes
       console.log('Fetched Resumes:', resumes);
   
-      if (resumes.length === 0) {
-        return res.status(404).json({ message: 'No resumes found' });
-      }
-  
-      res.status(200).json({ data: resumes });
+      // Always return an array, even if empty
+      res.status(200).json({ data: resumes || [] });
     } catch (error) {
       console.error('Error fetching resumes:', error);
-      res.status(500).json({ message: 'Internal server error' });
+      res.status(500).json({ message: 'Internal server error', data: [] });
     }
   };
 

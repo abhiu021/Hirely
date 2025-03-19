@@ -45,6 +45,7 @@ function Projects({ enableNext }) {
                 if (fetchedData) {
                     setProjectsList(fetchedData);
                 }
+                
                 toast.success("Projects fetched successfully");
             } catch (error) {
                 console.error('Error fetching resume data:', error);
@@ -110,7 +111,7 @@ function Projects({ enableNext }) {
                 description: repo.description || '',
                 technologies: repo.language || 'Not specified', // GitHub provides primary language
                 link: repo.html_url,
-                isVerified: true, // Mark as verified since it's from GitHub
+                isVerified: true // Mark as verified since it's from GitHub
             }));
 
             // Add the new projects to the existing list
@@ -181,7 +182,7 @@ function Projects({ enableNext }) {
         // Check if all projects are verified
         const allProjectsVerified = projectsList.every(project => project.isVerified);
         if (!allProjectsVerified) {
-            toast.error("Please verify all projects before saving.");
+            toast.error("Please verify all project links before saving.");
             return;
         }
     
@@ -278,6 +279,7 @@ function Projects({ enableNext }) {
                                     name="link"
                                     value={project.link}
                                     onChange={(e) => handleChange(e, index)}
+                                    required
                                 />
                             </div>
                             <div className="col-span-2">
@@ -291,7 +293,7 @@ function Projects({ enableNext }) {
                                 />
                             </div>
                         </div>
-                        <div className="flex justify-between mt-4">
+                        <div className="flex justify-between items-center mt-4 border-t pt-3">
                             <Button
                                 type="button"
                                 variant="outline"
@@ -302,20 +304,31 @@ function Projects({ enableNext }) {
                             <Button
                                 type="button"
                                 variant={project.isVerified ? "success" : "outline"}
-                                onClick={() => verifyProject(index)}
+                                onClick={() => project.isVerified ? null : verifyProject(index)}
                                 disabled={project.isVerified}
+                                className={project.isVerified ? "bg-green-100 text-green-800 border-green-200" : ""}
                             >
-                                {project.isVerified ? "Verified ✓" : "Verify Project"}
+                                {project.isVerified ? "Verified ✓" : "Verify Project Link"}
                             </Button>
                         </div>
                     </div>
                 ))}
 
                 <div className="flex justify-end mt-4">
-                    <Button type="submit" disabled={loading}>
+                    <Button 
+                        type="submit" 
+                        disabled={loading || (projectsList.length > 0 && !projectsList.every(p => p.isVerified))}
+                        className={projectsList.length > 0 && !projectsList.every(p => p.isVerified) ? "opacity-50 bg-gray-300 cursor-not-allowed" : ""}
+                    >
                         {loading ? <LoaderCircle className="animate-spin" /> : 'Save'}
                     </Button>
                 </div>
+                
+                {projectsList.length > 0 && !projectsList.every(p => p.isVerified) && (
+                    <p className="text-xs text-amber-600 mt-2 text-right">
+                        All project links must be verified before saving
+                    </p>
+                )}
             </form>
         </div>
     );
