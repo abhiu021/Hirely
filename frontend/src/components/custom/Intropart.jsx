@@ -41,13 +41,26 @@ const Intropart = () => {
                         
                         <AnimatedSection animation="fade-up" delay={700}>
                             <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
-                                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-2 px-6 rounded-full">
-                                    <RocketIcon className="mr-2 h-4 w-4" />
-                                    Create New Resume
+                                <Button 
+                                    asChild
+                                    size="lg" 
+                                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-2 px-6 rounded-full"
+                                >
+                                    <Link to="/dashboard">
+                                        <RocketIcon className="mr-2 h-4 w-4" />
+                                        Create New Resume
+                                    </Link>
                                 </Button>
-                                <Button variant="outline" size="lg" className="border-2 border-blue-500 text-blue-600 font-medium py-2 px-6 rounded-full hover:bg-blue-50">
-                                    <RefreshCcwIcon className="mr-2 h-4 w-4" />
-                                    Update Resume
+                                <Button 
+                                    variant="outline" 
+                                    asChild
+                                    size="lg" 
+                                    className="border-2 border-blue-500 text-blue-600 font-medium py-2 px-6 rounded-full hover:bg-blue-50"
+                                >
+                                    <Link to="/dashboard">
+                                        <RefreshCcwIcon className="mr-2 h-4 w-4" />
+                                        Update Resume
+                                    </Link>
                                 </Button>
                             </div>
                         </AnimatedSection>
