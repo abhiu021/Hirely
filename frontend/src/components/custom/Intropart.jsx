@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button } from '../ui/button';
-import { Link } from 'react-router-dom';
 import { UserButton, useUser } from '@clerk/clerk-react';
 import { RocketIcon, RefreshCcwIcon } from 'lucide-react';
 import AnimatedSection from '../ui/animated-section';
@@ -46,10 +45,10 @@ const Intropart = () => {
                                     size="lg" 
                                     className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-2 px-6 rounded-full"
                                 >
-                                    <Link to="/dashboard">
+                                    <a href="https://hirely-frontend.onrender.com/dashboard">
                                         <RocketIcon className="mr-2 h-4 w-4" />
                                         Create New Resume
-                                    </Link>
+                                    </a>
                                 </Button>
                                 <Button 
                                     variant="outline" 
@@ -57,10 +56,10 @@ const Intropart = () => {
                                     size="lg" 
                                     className="border-2 border-blue-500 text-blue-600 font-medium py-2 px-6 rounded-full hover:bg-blue-50"
                                 >
-                                    <Link to="/dashboard">
+                                    <a href="https://hirely-frontend.onrender.com/dashboard">
                                         <RefreshCcwIcon className="mr-2 h-4 w-4" />
                                         Update Resume
-                                    </Link>
+                                    </a>
                                 </Button>
                             </div>
                         </AnimatedSection>
