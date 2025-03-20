@@ -17,10 +17,8 @@ function ResumePreview({ template = "modern" }) {
       case "modern":
         return (
           <div className="relative w-full h-full overflow-hidden">
-            {" "}
-            {/* Container with boundaries */}
             {/* Watermark */}
-            {!resumeInfo?.isVerified && (
+            {/* {!resumeInfo?.isVerified && (
               <div
                 className="absolute inset-0 pointer-events-none"
                 style={{
@@ -33,21 +31,21 @@ function ResumePreview({ template = "modern" }) {
                 <div
                   className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform rotate-[-30deg] whitespace-nowrap"
                   style={{
-                    fontSize: "clamp(40px, 10vw, 80px)", // Responsive font size
+                    fontSize: "clamp(40px, 10vw, 80px)",
                     color: "rgba(200,200,200,0.3)",
                     fontWeight: "bold",
                     userSelect: "none",
                     maxWidth: "100%",
                     overflow: "hidden",
-                    width: "150%", // Ensure full coverage
+                    width: "150%",
                     textAlign: "center",
                   }}
                 >
                   UNVERIFIED
                 </div>
               </div>
-            )}
-            {/* Existing modern template content */}
+            )} */}
+            {/* Template content */}
             <PersonalDetailPreview resumeInfo={resumeInfo} />
             <SummeryPreview resumeInfo={resumeInfo} />
             {resumeInfo?.Experience?.length > 0 && (
@@ -75,7 +73,7 @@ function ResumePreview({ template = "modern" }) {
 
   return (
     <div
-      className="shadow-lg h-full p-14 border-t-[20px]"
+      className="a4 shadow-lg p-14 border-t-[20px]"
       style={{ borderColor: resumeInfo?.themeColor }}
     >
       {renderTemplate()}

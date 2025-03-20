@@ -1,0 +1,38 @@
+/* Ultra simple print styles */
+@media print {
+  /* Hide everything except what should be printed */
+  body * {
+    visibility: hidden;
+  }
+  
+  /* But show the content that will be printed */
+  .a4, .a4 * {
+    visibility: visible;
+  }
+  
+  /* Position the printable content at the top of the page */
+  .a4 {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 210mm;
+    height: 297mm;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    background-color: white;
+  }
+  
+  /* Set page size and remove margins */
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
+
+/* Basic styling for print container in browser */
+.print-container {
+  width: 210mm;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+} 

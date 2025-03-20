@@ -5,7 +5,7 @@ const ATSTemplate = ({ resumeInfo }) => {
   return (
     <div className="relative max-w-[800pt] mx-auto p-[20pt] box-border bg-white text-black font-[Arial, sans-serif] leading-[1.4] overflow-hidden">
       {/* Watermark */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden"
+      {/* <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden"
            style={{
              zIndex: 999,
              background: 'repeating-linear-gradient(-45deg, transparent, transparent 100px, rgba(200,200,200,0.1) 100px, rgba(200,200,200,0.1) 200px)',
@@ -23,7 +23,7 @@ const ATSTemplate = ({ resumeInfo }) => {
              }}>
           UNVERIFIED
         </div>
-      </div>
+      </div> */}
 
       {/* Personal Details Header */}
       {resumeInfo?.personalDetails && (
