@@ -166,7 +166,7 @@ function UploadResumeCard({ onUpload }) {
             {/* Drag and Drop Area */}
             <div
               ref={dropZoneRef}
-              className={`border-2 border-dashed rounded-lg p-6 text-center transition-all duration-300 ${
+              className={`border-2 border-dashed rounded-lg p-3 sm:p-6 text-center transition-all duration-300 ${
                 isDragging
                   ? 'border-blue-500 bg-blue-50'
                   : resumeFile
@@ -180,8 +180,8 @@ function UploadResumeCard({ onUpload }) {
             >
               {resumeFile ? (
                 <div className="flex flex-col items-center">
-                  <File className="h-8 w-8 text-green-500 mb-2" />
-                  <p className="text-sm font-medium text-gray-900">{resumeFile.name}</p>
+                  <File className="h-6 w-6 sm:h-8 sm:w-8 text-green-500 mb-1 sm:mb-2" />
+                  <p className="text-xs sm:text-sm font-medium text-gray-900 break-all">{resumeFile.name}</p>
                   <p className="text-xs text-gray-500">
                     {(resumeFile.size / 1024 / 1024).toFixed(2)} MB
                   </p>
@@ -199,13 +199,13 @@ function UploadResumeCard({ onUpload }) {
                 </div>
               ) : (
                 <div className="flex flex-col items-center">
-                  <Upload className="h-8 w-8 text-blue-500 mb-2" />
-                  <p className="text-sm font-medium text-gray-700">
+                  <Upload className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500 mb-1 sm:mb-2" />
+                  <p className="text-xs sm:text-sm font-medium text-gray-700">
                     Drag & drop your resume here
                   </p>
                   <p className="text-xs text-gray-500 mb-1">- or -</p>
                   <p className="text-xs text-blue-500 font-medium">Browse files</p>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-gray-500 mt-1 sm:mt-2">
                     Supports PDF, DOCX (Max 5MB)
                   </p>
                 </div>
@@ -224,18 +224,18 @@ function UploadResumeCard({ onUpload }) {
             )}
           </div>
           
-          <div className='flex justify-end gap-5'>
+          <div className='flex flex-col sm:flex-row justify-end gap-2 sm:gap-5 mt-2'>
             <Button 
               onClick={() => setOpenDialog(false)} 
               variant='ghost'
-              className="rounded-md hover:bg-gray-100"
+              className="rounded-md hover:bg-gray-100 w-full sm:w-auto"
             >
               Cancel
             </Button>
             <Button 
               disabled={!resumeTitle || !resumeFile || loading || fileError} 
               onClick={handleUpload}
-              className="rounded-md bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+              className="rounded-md bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white w-full sm:w-auto"
             >
               {loading ? <Loader2 className='animate-spin mr-2' /> : 'Upload'}
             </Button>

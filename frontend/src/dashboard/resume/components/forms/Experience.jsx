@@ -228,7 +228,7 @@ function Experience() {
                 <div>
                     {experinceList.map((item, index) => (
                         <div key={index}>
-                            <div className='grid grid-cols-2 gap-3 border p-3 my-5 rounded-lg'>
+                            <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 border p-3 my-5 rounded-lg'>
                                 <div>
                                     <label className='text-xs'>Position Title</label>
                                     <Input name="title"
@@ -269,28 +269,28 @@ function Experience() {
                                         defaultValue={item?.endDate}
                                     />
                                 </div>
-                                <div className='col-span-2'>
+                                <div className='col-span-1 sm:col-span-2'>
                                     <RichTextEditor
                                         index={index}
                                         defaultValue={item?.workSummery}
                                         onRichTextEditorChange={(event) => handleRichTextEditor(event, 'workSummery', index)} />
                                 </div>
-                                <div className='col-span-2 flex items-center justify-between border-t pt-3'>
-                                    <div className="flex items-center gap-3">
+                                <div className='col-span-1 sm:col-span-2 flex flex-col sm:flex-row items-start sm:items-center justify-between border-t pt-3'>
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
                                         <Button
                                             type="button"
                                             variant={item?.certificate?.uploaded ? "secondary" : "outline"}
                                             onClick={() => openCertificateDialog(index)}
-                                            className="flex items-center gap-2"
+                                            className="flex items-center gap-2 w-full sm:w-auto"
                                         >
                                             <FileUp className="w-4 h-4" />
                                             {item?.certificate?.uploaded ? 'Update Certificate' : 'Upload Certificate'}
                                         </Button>
                                         
                                         {item?.certificate?.uploaded && (
-                                            <div className="flex items-center gap-2 text-green-600">
+                                            <div className="flex items-center gap-2 text-green-600 mt-2 sm:mt-0">
                                                 <CheckCircle className="w-4 h-4" />
-                                                <span className="text-sm">{item.certificate.fileName || 'Certificate uploaded'}</span>
+                                                <span className="text-sm truncate max-w-[200px]">{item.certificate.fileName || 'Certificate uploaded'}</span>
                                             </div>
                                         )}
                                     </div>
@@ -299,15 +299,15 @@ function Experience() {
                         </div>
                     ))}
                 </div>
-                <div className='flex justify-between'>
-                    <div className='flex gap-2'>
-                        <Button variant="outline" onClick={AddNewExperience} className="text-primary"> + Add More Experience</Button>
-                        <Button variant="outline" onClick={RemoveExperience} className="text-primary"> - Remove</Button>
+                <div className='flex flex-col sm:flex-row justify-between gap-2'>
+                    <div className='flex flex-col sm:flex-row gap-2'>
+                        <Button variant="outline" onClick={AddNewExperience} className="text-primary w-full sm:w-auto"> + Add More Experience</Button>
+                        <Button variant="outline" onClick={RemoveExperience} className="text-primary w-full sm:w-auto"> - Remove</Button>
                     </div>
                     <Button 
                         disabled={loading || (experinceList.length > 0 && !certificateUploaded)} 
                         onClick={() => onSave()}
-                        className={experinceList.length > 0 && !certificateUploaded ? "opacity-50 bg-gray-300 cursor-not-allowed" : ""}
+                        className={`mt-2 sm:mt-0 w-full sm:w-auto ${experinceList.length > 0 && !certificateUploaded ? "opacity-50 bg-gray-300 cursor-not-allowed" : ""}`}
                     >
                         {loading ? <LoaderCircle className='animate-spin' /> : 'Save'}
                     </Button>
@@ -328,15 +328,15 @@ function Experience() {
                     
                     <div className="flex flex-col gap-4 py-4">
                         <div 
-                            className={`border-2 border-dashed rounded-lg p-6 text-center transition-all duration-300 ${
+                            className={`border-2 border-dashed rounded-lg p-4 sm:p-6 text-center transition-all duration-300 ${
                                 selectedFile ? 'border-green-300 bg-green-50' : 'border-gray-300 hover:border-blue-300 hover:bg-blue-50'
                             }`}
                             onClick={() => document.getElementById('certificate-file-input').click()}
                         >
                             {selectedFile ? (
                                 <div className="flex flex-col items-center">
-                                    <File className="h-8 w-8 text-green-500 mb-2" />
-                                    <p className="text-sm font-medium text-gray-900">{selectedFile.name}</p>
+                                    <File className="h-6 w-6 sm:h-8 sm:w-8 text-green-500 mb-1 sm:mb-2" />
+                                    <p className="text-xs sm:text-sm font-medium text-gray-900 break-all">{selectedFile.name}</p>
                                     <p className="text-xs text-gray-500">
                                         {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                                     </p>
@@ -353,11 +353,11 @@ function Experience() {
                                 </div>
                             ) : (
                                 <div className="flex flex-col items-center">
-                                    <Upload className="h-8 w-8 text-blue-500 mb-2" />
-                                    <p className="text-sm font-medium text-gray-700">
+                                    <Upload className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500 mb-1 sm:mb-2" />
+                                    <p className="text-xs sm:text-sm font-medium text-gray-700">
                                         Click to upload certificate
                                     </p>
-                                    <p className="text-xs text-gray-500 mt-2">
+                                    <p className="text-xs text-gray-500 mt-1 sm:mt-2">
                                         Supports PDF, JPEG, PNG (Max 5MB)
                                     </p>
                                 </div>
@@ -372,11 +372,12 @@ function Experience() {
                         </div>
                     </div>
                     
-                    <DialogFooter>
+                    <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-0">
                         <Button
                             type="button"
                             variant="outline"
                             onClick={() => setDialogOpen(false)}
+                            className="w-full sm:w-auto order-2 sm:order-1"
                         >
                             Cancel
                         </Button>
@@ -384,6 +385,7 @@ function Experience() {
                             type="button"
                             disabled={!selectedFile || uploadingCertificate}
                             onClick={uploadCertificate}
+                            className="w-full sm:w-auto order-1 sm:order-2"
                         >
                             {uploadingCertificate ? (
                                 <>

@@ -113,7 +113,7 @@ function PersonalDetail({ enabledNext }) {
             <p>Get Started with the basic information</p>
 
             <form onSubmit={onSave}>
-                <div className='grid grid-cols-2 mt-5 gap-3'>
+                <div className='grid grid-cols-1 sm:grid-cols-2 mt-5 gap-3'>
                     {personalDetailsList.map((item, index) => (
                         <React.Fragment key={index}>
                             <div>
@@ -134,7 +134,7 @@ function PersonalDetail({ enabledNext }) {
                                     onChange={(event) => handleChange(index, event)}
                                 />
                             </div>
-                            <div className='col-span-2'>
+                            <div className='col-span-1 sm:col-span-2'>
                                 <label className='text-sm'>Job Title</label>
                                 <Input
                                     name="jobTitle"
@@ -143,7 +143,7 @@ function PersonalDetail({ enabledNext }) {
                                     onChange={(event) => handleChange(index, event)}
                                 />
                             </div>
-                            <div className='col-span-2'>
+                            <div className='col-span-1 sm:col-span-2'>
                                 <label className='text-sm'>Address</label>
                                 <Input
                                     name="address"
@@ -174,7 +174,7 @@ function PersonalDetail({ enabledNext }) {
                     ))}
                 </div>
                 <div className='mt-3 flex justify-end'>
-                    <Button type="submit" disabled={loading}>
+                    <Button type="submit" disabled={loading} className="w-full sm:w-auto">
                         {loading ? <LoaderCircle className='animate-spin' /> : 'Save'}
                     </Button>
                 </div>

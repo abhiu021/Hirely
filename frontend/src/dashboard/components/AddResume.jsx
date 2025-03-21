@@ -85,18 +85,18 @@ function AddResume() {
               onChange={(e) => setResumeTitle(e.target.value)}
             />
           </div>
-          <div className='flex justify-end gap-5'>
+          <div className='flex flex-col sm:flex-row justify-end gap-2 sm:gap-5 mt-2'>
             <Button 
               onClick={() => setOpenDialog(false)} 
               variant='ghost'
-              className="rounded-md hover:bg-gray-100"
+              className="rounded-md hover:bg-gray-100 w-full sm:w-auto"
             >
               Cancel
             </Button>
             <Button 
               disabled={!resumeTitle || loading} 
               onClick={onCreate}
-              className="rounded-md bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+              className="rounded-md bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white w-full sm:w-auto"
             >
               {loading ? <Loader2 className='animate-spin mr-2' /> : 'Create'}
             </Button>

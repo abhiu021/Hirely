@@ -217,17 +217,17 @@ function Projects({ enableNext }) {
     };
 
     return (
-        <div className="p-5 shadow-lg rounded-lg border-t-primary border-t-4 mt-10">
-            <div className="flex justify-between items-center mb-4">
+        <div className="p-4 sm:p-5 shadow-lg rounded-lg border-t-primary border-t-4 mt-10">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                 <div>
                     <h2 className="font-bold text-lg">Projects</h2>
                     <p className="text-sm text-gray-600">Add your significant projects</p>
                 </div>
-                <div className="flex gap-2">
-                    <Button variant="outline" onClick={AddProject}>Add Project</Button>
+                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    <Button variant="outline" onClick={AddProject} className="w-full sm:w-auto">Add Project</Button>
                     <Dialog>
                         <DialogTrigger asChild>
-                            <Button variant="outline">Import from GitHub</Button>
+                            <Button variant="outline" className="w-full sm:w-auto">Import from GitHub</Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
@@ -242,6 +242,7 @@ function Projects({ enableNext }) {
                                 <Button 
                                     onClick={fetchGitHubProjects}
                                     disabled={importLoading || !githubUsername}
+                                    className="w-full"
                                 >
                                     {importLoading ? <LoaderCircle className="animate-spin mr-2" /> : 'Import Projects'}
                                 </Button>
@@ -254,8 +255,8 @@ function Projects({ enableNext }) {
             <form onSubmit={onSave}>
                 {projectsList.map((project, index) => (
                     <div key={index} className="border rounded-lg p-4 mb-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="col-span-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="col-span-1 sm:col-span-2">
                                 <label className="text-sm">Project Name</label>
                                 <Input
                                     name="name"
@@ -264,7 +265,7 @@ function Projects({ enableNext }) {
                                     required
                                 />
                             </div>
-                            <div className="col-span-2">
+                            <div className="col-span-1 sm:col-span-2">
                                 <label className="text-sm">Technologies Used</label>
                                 <Input
                                     name="technologies"
@@ -273,7 +274,7 @@ function Projects({ enableNext }) {
                                     required
                                 />
                             </div>
-                            <div className="col-span-2">
+                            <div className="col-span-1 sm:col-span-2">
                                 <label className="text-sm">Project Link</label>
                                 <Input
                                     name="link"
@@ -282,7 +283,7 @@ function Projects({ enableNext }) {
                                     required
                                 />
                             </div>
-                            <div className="col-span-2">
+                            <div className="col-span-1 sm:col-span-2">
                                 <label className="text-sm">Description</label>
                                 <Textarea
                                     name="description"
@@ -293,11 +294,12 @@ function Projects({ enableNext }) {
                                 />
                             </div>
                         </div>
-                        <div className="flex justify-between items-center mt-4 border-t pt-3">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-4 border-t pt-3 gap-2">
                             <Button
                                 type="button"
                                 variant="outline"
                                 onClick={() => RemoveProject(index)}
+                                className="w-full sm:w-auto"
                             >
                                 Remove Project
                             </Button>
@@ -306,7 +308,7 @@ function Projects({ enableNext }) {
                                 variant={project.isVerified ? "success" : "outline"}
                                 onClick={() => project.isVerified ? null : verifyProject(index)}
                                 disabled={project.isVerified}
-                                className={project.isVerified ? "bg-green-100 text-green-800 border-green-200" : ""}
+                                className={`w-full sm:w-auto ${project.isVerified ? "bg-green-100 text-green-800 border-green-200" : ""}`}
                             >
                                 {project.isVerified ? "Verified ✓" : "Verify Project Link"}
                             </Button>
@@ -318,7 +320,7 @@ function Projects({ enableNext }) {
                     <Button 
                         type="submit" 
                         disabled={loading || (projectsList.length > 0 && !projectsList.every(p => p.isVerified))}
-                        className={projectsList.length > 0 && !projectsList.every(p => p.isVerified) ? "opacity-50 bg-gray-300 cursor-not-allowed" : ""}
+                        className={`w-full sm:w-auto ${projectsList.length > 0 && !projectsList.every(p => p.isVerified) ? "opacity-50 bg-gray-300 cursor-not-allowed" : ""}`}
                     >
                         {loading ? <LoaderCircle className="animate-spin" /> : 'Save'}
                     </Button>

@@ -15,25 +15,26 @@ function FormSection() {
   const [enableNext,setEnableNext]=useState(true);
   const {resumeId}=useParams();
   return (
-    <div>
-        <div className='flex justify-between items-center'>
-          <div className='flex gap-5'>
+    <div className="p-2 sm:p-4">
+        <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-0'>
+          <div className='flex gap-2 sm:gap-5 w-full sm:w-auto'>
             <Link to={"/dashboard"}>
-          <Button><Home/></Button>
-          </Link>
-          <ThemeColor/>
-         
+              <Button size="sm" className="w-full"><Home className="mr-1 h-4 w-4"/><span className="hidden sm:inline">Dashboard</span></Button>
+            </Link>
+            <ThemeColor/>
           </div>
-          <div className='flex gap-2'>
+          <div className='flex gap-2 w-full sm:w-auto'>
             {activeFormIndex>1
-            &&<Button size="sm" 
-            onClick={()=>setActiveFormIndex(activeFormIndex-1)}> <ArrowLeft/> </Button> }
+            && <Button size="sm" 
+            onClick={()=>setActiveFormIndex(activeFormIndex-1)}
+            className="w-full sm:w-auto"
+            > <ArrowLeft className="mr-1 h-4 w-4"/> <span className="hidden sm:inline">Previous</span> </Button> }
             <Button 
             disabled={!enableNext}
-            className="flex gap-2" size="sm"
+            className="flex gap-1 w-full sm:w-auto" size="sm"
             onClick={()=>setActiveFormIndex(activeFormIndex + 1)}
-            > Next 
-            <ArrowRight/> </Button>
+            > <span>Next</span> 
+            <ArrowRight className="h-4 w-4"/> </Button>
           </div>
         </div>
         {/* Personal Detail  */}
@@ -54,14 +55,6 @@ function FormSection() {
               
         :null
           } 
-        
-
-      {/* Experience  */}
-
-      {/* Educational Detail  */}
-
-      {/* Skills  */}
-
     </div>
   )
 }

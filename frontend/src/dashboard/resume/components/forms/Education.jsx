@@ -307,72 +307,72 @@ function Education() {
   }, [educationalList, setResumeInfo]); 
 
   return (
-    <div className='p-5 shadow-lg rounded-lg border-t-primary border-t-4 mt-10'>
+    <div className='p-4 sm:p-5 shadow-lg rounded-lg border-t-primary border-t-4 mt-10'>
       <h2 className='font-bold text-lg'>Education</h2>
       <p>Add Your educational details</p>
 
       <div>
         {Array.isArray(educationalList) && educationalList.map((item, index) => (
           <div key={index}>
-            <div className='grid grid-cols-2 gap-3 border p-3 my-5 rounded-lg'>
-              <div className='col-span-2'>
-                <label>University Name</label>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 border p-3 my-5 rounded-lg'>
+              <div className='col-span-1 sm:col-span-2'>
+                <label className="text-xs">University Name</label>
                 <Input name="universityName"
                   onChange={(e) => handleChange(e, index)}
                   defaultValue={item?.universityName}
                 />
               </div>
               <div>
-                <label>Degree</label>
+                <label className="text-xs">Degree</label>
                 <Input name="degree"
                   onChange={(e) => handleChange(e, index)}
                   defaultValue={item?.degree}
                 />
               </div>
               <div>
-                <label>Major</label>
+                <label className="text-xs">Major</label>
                 <Input name="major"
                   onChange={(e) => handleChange(e, index)}
                   defaultValue={item?.major}
                 />
               </div>
               <div>
-                <label>Start Date</label>
+                <label className="text-xs">Start Date</label>
                 <Input type="date" name="startDate"
                   onChange={(e) => handleChange(e, index)}
                   defaultValue={item?.startDate}
                 />
               </div>
               <div>
-                <label>End Date</label>
+                <label className="text-xs">End Date</label>
                 <Input type="date" name="endDate"
                   onChange={(e) => handleChange(e, index)}
                   defaultValue={item?.endDate}
                 />
               </div>
-              <div className='col-span-2'>
-                <label>Description</label>
+              <div className='col-span-1 sm:col-span-2'>
+                <label className="text-xs">Description</label>
                 <Textarea name="description"
                   onChange={(e) => handleChange(e, index)}
                   defaultValue={item?.description}
                 />
               </div>
-              <div className='col-span-2 flex items-center justify-between border-t pt-3'>
-                <div className="flex items-center gap-3">
+              <div className='col-span-1 sm:col-span-2 flex flex-col sm:flex-row items-start sm:items-center justify-between border-t pt-3'>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
                   <Button
                     type="button"
                     variant={item?.certificate?.uploaded ? "secondary" : "outline"}
                     onClick={() => openCertificateDialog(index)}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 w-full sm:w-auto"
                   >
                     <FileUp className="w-4 h-4" />
                     {item?.certificate?.uploaded ? 'Update Certificate' : 'Upload Certificate'}
                   </Button>
                   
                   {item?.certificate?.uploaded && (
-                    <div className="flex items-center gap-2 text-green-600">
+                    <div className="flex items-center gap-2 text-green-600 mt-2 sm:mt-0">
                       <CheckCircle className="w-4 h-4" />
-                      <span className="text-sm">{item.certificate.fileName || 'Certificate uploaded'}</span>
+                      <span className="text-sm truncate max-w-[200px]">{item.certificate.fileName || 'Certificate uploaded'}</span>
                     </div>
                   )}
                 </div>
@@ -381,17 +381,17 @@ function Education() {
           </div>
         ))}
       </div>
-      <div className='flex justify-between'>
-        <div className='flex gap-2'>
-          <Button variant="outline" onClick={AddNewEducation} className="text-primary"> + Add More Education</Button>
-          <Button variant="outline" onClick={RemoveEducation} className="text-primary"> - Remove</Button>
+      <div className='flex flex-col sm:flex-row justify-between gap-2'>
+        <div className='flex flex-col sm:flex-row gap-2'>
+          <Button variant="outline" onClick={AddNewEducation} className="text-primary w-full sm:w-auto"> + Add More Education</Button>
+          <Button variant="outline" onClick={RemoveEducation} className="text-primary w-full sm:w-auto"> - Remove</Button>
         </div>
         <Button 
-                        disabled={loading || (educationalList.length > 0 && !certificateUploaded)} 
-                        onClick={() => onSave()}
-                        className={educationalList.length > 0 && !certificateUploaded ? "opacity-50 bg-gray-300 cursor-not-allowed" : ""}
-                    >
-                        {loading ? <LoaderCircle className='animate-spin' /> : 'Save'}
+          disabled={loading || (educationalList.length > 0 && !certificateUploaded)} 
+          onClick={() => onSave()}
+          className={`w-full sm:w-auto mt-2 sm:mt-0 ${educationalList.length > 0 && !certificateUploaded ? "opacity-50 bg-gray-300 cursor-not-allowed" : ""}`}
+        >
+          {loading ? <LoaderCircle className='animate-spin' /> : 'Save'}
         </Button>
       </div>
       {educationalList.length > 0 && !certificateUploaded && (
@@ -410,15 +410,15 @@ function Education() {
           
           <div className="flex flex-col gap-4 py-4">
             <div 
-              className={`border-2 border-dashed rounded-lg p-6 text-center transition-all duration-300 ${
+              className={`border-2 border-dashed rounded-lg p-4 sm:p-6 text-center transition-all duration-300 ${
                 selectedFile ? 'border-green-300 bg-green-50' : 'border-gray-300 hover:border-blue-300 hover:bg-blue-50'
               }`}
               onClick={() => document.getElementById('education-certificate-input').click()}
             >
               {selectedFile ? (
                 <div className="flex flex-col items-center">
-                  <File className="h-8 w-8 text-green-500 mb-2" />
-                  <p className="text-sm font-medium text-gray-900">{selectedFile.name}</p>
+                  <File className="h-6 w-6 sm:h-8 sm:w-8 text-green-500 mb-1 sm:mb-2" />
+                  <p className="text-xs sm:text-sm font-medium text-gray-900 break-all">{selectedFile.name}</p>
                   <p className="text-xs text-gray-500">
                     {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                   </p>
@@ -435,11 +435,11 @@ function Education() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center">
-                  <FileUp className="h-8 w-8 text-blue-500 mb-2" />
-                  <p className="text-sm font-medium text-gray-700">
+                  <FileUp className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500 mb-1 sm:mb-2" />
+                  <p className="text-xs sm:text-sm font-medium text-gray-700">
                     Click to upload certificate
                   </p>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-gray-500 mt-1 sm:mt-2">
                     Supports PDF, JPEG, PNG (Max 5MB)
                   </p>
                 </div>
@@ -454,11 +454,12 @@ function Education() {
             </div>
           </div>
           
-          <DialogFooter>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-0">
             <Button
               type="button"
               variant="outline"
               onClick={() => setDialogOpen(false)}
+              className="w-full sm:w-auto order-2 sm:order-1"
             >
               Cancel
             </Button>
@@ -466,6 +467,7 @@ function Education() {
               type="button"
               disabled={!selectedFile || uploadingCertificate}
               onClick={uploadCertificate}
+              className="w-full sm:w-auto order-1 sm:order-2"
             >
               {uploadingCertificate ? (
                 <>
