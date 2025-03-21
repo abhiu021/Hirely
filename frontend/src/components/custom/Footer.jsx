@@ -1,9 +1,28 @@
 import React from 'react';
 import { Facebook, Twitter, Instagram, Linkedin, ChevronRight } from 'lucide-react';
 import AnimatedSection from '../ui/animated-section';
+import { Link, useLocation } from 'react-router-dom';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
+  
+  // Function to handle smooth scrolling to templates section
+  const scrollToTemplates = (e) => {
+    e.preventDefault();
+    
+    if (isHomePage) {
+      // If on home page, scroll to templates section
+      const templatesSection = document.getElementById('templates');
+      if (templatesSection) {
+        templatesSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      // If on any other page, navigate to home page templates section
+      window.location.href = '/#templates';
+    }
+  };
   
   return (
     <footer className="bg-gradient-to-br from-gray-900 to-gray-800 text-white relative overflow-hidden">
@@ -25,16 +44,16 @@ const Footer = () => {
                 We help job seekers create professional resumes and cover letters that get noticed by employers.
               </p>
               <div className="flex space-x-4">
-                <a href="https://facebook.com" className="text-gray-300 hover:text-blue-400 transition-colors duration-300">
+                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-blue-400 transition-colors duration-300">
                   <Facebook size={20} />
                 </a>
-                <a href="https://twitter.com" className="text-gray-300 hover:text-blue-400 transition-colors duration-300">
+                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-blue-400 transition-colors duration-300">
                   <Twitter size={20} />
                 </a>
-                <a href="https://instagram.com" className="text-gray-300 hover:text-blue-400 transition-colors duration-300">
+                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-blue-400 transition-colors duration-300">
                   <Instagram size={20} />
                 </a>
-                <a href="https://linkedin.com" className="text-gray-300 hover:text-blue-400 transition-colors duration-300">
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-blue-400 transition-colors duration-300">
                   <Linkedin size={20} />
                 </a>
               </div>
@@ -47,29 +66,33 @@ const Footer = () => {
               <h3 className="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">Quick Links</h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="/" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
+                  <Link to="/" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
                     <ChevronRight size={14} className="mr-1" /> Home
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/dashboard" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
+                  <Link to="/dashboard" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
                     <ChevronRight size={14} className="mr-1" /> Dashboard
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/blog" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
+                  <Link to="/blog" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
                     <ChevronRight size={14} className="mr-1" /> Blog
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/#templates" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
+                  <a 
+                    href={isHomePage ? "#templates" : "/#templates"} 
+                    onClick={scrollToTemplates}
+                    className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center cursor-pointer"
+                  >
                     <ChevronRight size={14} className="mr-1" /> Resume Templates
                   </a>
                 </li>
                 <li>
-                  <a href="/about-us" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
+                  <Link to="/about-us" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
                     <ChevronRight size={14} className="mr-1" /> About Us
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>

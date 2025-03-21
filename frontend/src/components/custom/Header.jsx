@@ -10,6 +10,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -17,10 +18,18 @@ const Header = () => {
 
   const scrollToTemplates = (e) => {
     e.preventDefault();
-    const templatesSection = document.getElementById('templates');
-    if (templatesSection) {
-      templatesSection.scrollIntoView({ behavior: 'smooth' });
+    
+    if (isHomePage) {
+      // If on home page, scroll to templates section
+      const templatesSection = document.getElementById('templates');
+      if (templatesSection) {
+        templatesSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      // If on any other page, navigate to home page templates section
+      window.location.href = '/#templates';
     }
+    
     if (isMenuOpen) {
       toggleMenu();
     }
@@ -75,7 +84,7 @@ const Header = () => {
             </Link>
             <Link className="text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium" to="/blog">Blog</Link>
             <a 
-              href="#templates" 
+              href={isHomePage ? "#templates" : "/#templates"} 
               onClick={scrollToTemplates}
               className="text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium cursor-pointer"
             >
@@ -142,7 +151,7 @@ const Header = () => {
             Blog
           </Link>
           <a 
-            href="#templates"
+            href={isHomePage ? "#templates" : "/#templates"}
             onClick={scrollToTemplates}
             className="text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium flex items-center cursor-pointer"
           >

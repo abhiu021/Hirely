@@ -9,6 +9,7 @@ import Dashboard from './dashboard/index.jsx';
 import { ClerkProvider } from '@clerk/clerk-react';
 import AdminDashboard from './admin/index.jsx';
 import AdminRoute from './component/AdminRoute.jsx';
+import ProtectedRoute from './component/ProtectedRoute.jsx';
 import EditUser from './admin/EditUser.jsx'; // Import the EditUser component
 import EditResume from './dashboard/resume/[resumeId]/edit/index.jsx'
 import ViewResume from './my-resume/[resumeId]/view/index.jsx'
@@ -29,15 +30,27 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/dashboard',
-        element: <Dashboard />,
+        element: (
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        ),
       },
       {
         path:'/dashboard/resume/:resumeId/edit',
-        element:<EditResume/>
+        element: (
+          <ProtectedRoute>
+            <EditResume/>
+          </ProtectedRoute>
+        ),
       },
       {
         path:'/dashboard/ats-score-result',
-        element:<ATSScoreResult/>
+        element: (
+          <ProtectedRoute>
+            <ATSScoreResult/>
+          </ProtectedRoute>
+        ),
       },
       {
         path: '/admin/dashboard',
@@ -63,7 +76,11 @@ const router = createBrowserRouter([
   },
   {
     path:'/my-resume/:resumeId/view',
-    element:<ViewResume/>
+    element: (
+      <ProtectedRoute>
+        <ViewResume/>
+      </ProtectedRoute>
+    ),
   },
   {
     path:'/blog',
