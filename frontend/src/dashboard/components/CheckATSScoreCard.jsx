@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { CheckCircle } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { CheckCircle, Upload, File } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -20,6 +20,9 @@ function CheckATSScoreCard({ onCheckScore }) {
   const [jobDescription, setJobDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [fileError, setFileError] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef(null);
+  const dropZoneRef = useRef(null);
   const navigate = useNavigate();
 
   const validateFile = (file) => {
@@ -47,6 +50,38 @@ function CheckATSScoreCard({ onCheckScore }) {
     } else {
       setResumeFile(null);
       setFileError('');
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      const error = validateFile(file);
+      setFileError(error);
+      setResumeFile(error ? null : file);
+    }
+  };
+
+  const handleBrowseClick = () => {
+    // Trigger the hidden file input
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
   };
 
@@ -122,13 +157,61 @@ function CheckATSScoreCard({ onCheckScore }) {
           <div className="mt-2 space-y-3">
             <div>
               <label className="text-sm text-gray-700 mb-1 block">Resume File</label>
-              <Input
-                type='file'
-                name="pdf_doc"
-                className="w-full"
-                accept=".pdf,.docx"
-                onChange={handleFileChange}
-              />
+              {/* Drag and Drop Area */}
+              <div
+                ref={dropZoneRef}
+                className={`border-2 border-dashed rounded-lg p-6 text-center transition-all duration-300 ${
+                  isDragging
+                    ? 'border-blue-500 bg-blue-50'
+                    : resumeFile
+                      ? 'border-green-300 bg-green-50'
+                      : 'border-gray-300 hover:border-blue-300 hover:bg-blue-50'
+                }`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={handleBrowseClick}
+              >
+                {resumeFile ? (
+                  <div className="flex flex-col items-center">
+                    <File className="h-8 w-8 text-green-500 mb-2" />
+                    <p className="text-sm font-medium text-gray-900">{resumeFile.name}</p>
+                    <p className="text-xs text-gray-500">
+                      {(resumeFile.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                    <Button
+                      variant="link"
+                      className="mt-1 p-0 h-auto text-xs text-blue-500"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setResumeFile(null);
+                        setFileError('');
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center">
+                    <Upload className="h-8 w-8 text-blue-500 mb-2" />
+                    <p className="text-sm font-medium text-gray-700">
+                      Drag & drop your resume here
+                    </p>
+                    <p className="text-xs text-gray-500 mb-1">- or -</p>
+                    <p className="text-xs text-blue-500 font-medium">Browse files</p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Supports PDF, DOCX (Max 5MB)
+                    </p>
+                  </div>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  accept=".pdf,.docx"
+                  onChange={handleFileChange}
+                />
+              </div>
               {fileError && (
                 <p className="text-sm text-red-500 mt-1">{fileError}</p>
               )}
