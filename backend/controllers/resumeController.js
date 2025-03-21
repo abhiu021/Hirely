@@ -133,7 +133,7 @@ export const updateResume = async (req, res) => {
       return res.status(400).json({ message: 'Resume ID is required' });
     }
 
-    if(!updateData){
+    if (!updateData) {
       return res.status(400).json({ message: 'Update data is required' });
     }
 
@@ -278,7 +278,7 @@ export const uploadResume = async (req, res) => {
           themeColor: '#3498db',
         };
       }
-      
+
       // Add user information to the resume data
       resumeData.title = title || resumeData.title || 'Untitled Resume';
       resumeData.userEmail = userEmail;
@@ -303,7 +303,7 @@ export const uploadResume = async (req, res) => {
       });
     } catch (fileProcessingError) {
       console.error('Error processing file:', fileProcessingError);
-      
+
       // Even if file processing fails, try to create a minimal resume
       const resumeData = {
         title: title || 'Untitled Resume',
@@ -325,11 +325,11 @@ export const uploadResume = async (req, res) => {
         summery: 'Please edit this resume to add your details.',
         themeColor: '#3498db',
       };
-      
+      console.log("Resume Data: ", resumeData);
       // Create and save a minimal resume
       const newResume = new Resume(resumeData);
       await newResume.save();
-      
+
       // Return the created resume
       res.status(201).json({
         message: 'Resume uploaded but parsing had issues. You can edit it manually.',
@@ -398,7 +398,7 @@ export const calculateATSScore = async (resumeText, jobDescription) => {
     try {
       // Parse the cleaned JSON string
       const atsScore = JSON.parse(jsonString);
-      
+
       // Validate and clean the ATS score data
       const cleanedScore = {
         jobDescriptionMatch: parseFloat(atsScore.jobDescriptionMatch) || 0,
@@ -407,7 +407,7 @@ export const calculateATSScore = async (resumeText, jobDescription) => {
         personalizedSuggestions: Array.isArray(atsScore.personalizedSuggestions) ? atsScore.personalizedSuggestions : [],
         applicationSuccessRate: parseFloat(atsScore.applicationSuccessRate) || 0
       };
-      
+
       return cleanedScore;
     } catch (parseError) {
       console.error('Error parsing ATS score JSON:', parseError);
@@ -492,12 +492,12 @@ export const checkATSScore = async (req, res) => {
     });
   } catch (error) {
     console.error('Error calculating ATS score:', error);
-    
+
     // Delete the uploaded file in case of an error
     if (req.file) {
       fs.unlinkSync(req.file.path);
     }
-    
+
     res.status(500).json({ message: 'Internal server error' });
   }
 };

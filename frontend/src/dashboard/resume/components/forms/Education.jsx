@@ -387,11 +387,11 @@ function Education() {
           <Button variant="outline" onClick={RemoveEducation} className="text-primary"> - Remove</Button>
         </div>
         <Button 
-          disabled={loading || (educationalList.length > 0 && !certificateUploaded)} 
-          onClick={onSave}
-          className={educationalList.length > 0 && !certificateUploaded ? "opacity-50 bg-gray-300 cursor-not-allowed" : ""}
-        >
-          {loading ? <LoaderCircle className='animate-spin' /> : 'Save'}
+                        disabled={loading || (educationalList.length > 0 && !certificateUploaded)} 
+                        onClick={() => onSave()}
+                        className={educationalList.length > 0 && !certificateUploaded ? "opacity-50 bg-gray-300 cursor-not-allowed" : ""}
+                    >
+                        {loading ? <LoaderCircle className='animate-spin' /> : 'Save'}
         </Button>
       </div>
       {educationalList.length > 0 && !certificateUploaded && (
