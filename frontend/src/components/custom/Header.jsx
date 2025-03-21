@@ -1,17 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '../ui/button';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { UserButton, useUser } from '@clerk/clerk-react';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, Home } from 'lucide-react';
 import AnimatedSection from '../ui/animated-section';
 
 const Header = () => {
   const { user, isSignedIn } = useUser();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const scrollToTemplates = (e) => {
+    e.preventDefault();
+    const templatesSection = document.getElementById('templates');
+    if (templatesSection) {
+      templatesSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    if (isMenuOpen) {
+      toggleMenu();
+    }
   };
 
   useEffect(() => {
@@ -50,23 +62,26 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-5 items-center">
-            <Link className="text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium" to="/">Home</Link>
+            <Link 
+              className={`flex items-center text-sm font-medium ${
+                location.pathname === '/' 
+                  ? 'text-blue-600' 
+                  : 'text-gray-700 hover:text-blue-600'
+              } transition duration-200`} 
+              to="/"
+            >
+              <Home className="w-4 h-4 mr-1" />
+              Home
+            </Link>
             <Link className="text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium" to="/blog">Blog</Link>
-            
-            {/* Dropdown */}
-            <div className="relative group">
-              <button className="flex items-center text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium">
-                Resources <ChevronDown className="h-3.5 w-3.5 ml-1" />
-              </button>
-              <div className="absolute left-0 mt-1 w-48 bg-white rounded-lg shadow-lg p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-1 z-50 border border-gray-100">
-                <Link className="block px-3 py-1.5 text-sm text-gray-700 hover:bg-blue-50 rounded-md transition duration-200" to="/templates">Templates</Link>
-                <Link className="block px-3 py-1.5 text-sm text-gray-700 hover:bg-blue-50 rounded-md transition duration-200" to="/resume-tips">Resume Tips</Link>
-                <Link className="block px-3 py-1.5 text-sm text-gray-700 hover:bg-blue-50 rounded-md transition duration-200" to="/cover-letters">Cover Letters</Link>
-              </div>
-            </div>
-            
+            <a 
+              href="#templates" 
+              onClick={scrollToTemplates}
+              className="text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium cursor-pointer"
+            >
+              Resume Templates
+            </a>
             <Link className="text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium" to="/about-us">About Us</Link>
-            <Link className="text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium" to="/contact-us">Contact</Link>
           </nav>
 
           {/* User Actions */}
@@ -111,35 +126,30 @@ const Header = () => {
         }`}
       >
         <nav className="flex flex-col space-y-3">
-          <Link className="text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium flex items-center" to="/" onClick={toggleMenu}>
+          <Link 
+            className={`flex items-center text-sm font-medium ${
+              location.pathname === '/' 
+                ? 'text-blue-600' 
+                : 'text-gray-700 hover:text-blue-600'
+            } transition duration-200`} 
+            to="/" 
+            onClick={toggleMenu}
+          >
+            <Home className="w-4 h-4 mr-1" />
             Home
           </Link>
           <Link className="text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium flex items-center" to="/blog" onClick={toggleMenu}>
             Blog
           </Link>
-          
-          {/* Mobile Dropdown (simplified) */}
-          <div className="space-y-2 pl-3 border-l-2 border-gray-100">
-            <p className="text-gray-700 text-sm font-medium">Resources</p>
-            <Link className="block text-gray-600 hover:text-blue-600 transition duration-200 flex items-center text-sm" to="/templates" onClick={toggleMenu}>
-              <ChevronDown className="h-3 w-3 mr-2 rotate-90" />
-              Templates
-            </Link>
-            <Link className="block text-gray-600 hover:text-blue-600 transition duration-200 flex items-center text-sm" to="/resume-tips" onClick={toggleMenu}>
-              <ChevronDown className="h-3 w-3 mr-2 rotate-90" />
-              Resume Tips
-            </Link>
-            <Link className="block text-gray-600 hover:text-blue-600 transition duration-200 flex items-center text-sm" to="/cover-letters" onClick={toggleMenu}>
-              <ChevronDown className="h-3 w-3 mr-2 rotate-90" />
-              Cover Letters
-            </Link>
-          </div>
-          
+          <a 
+            href="#templates"
+            onClick={scrollToTemplates}
+            className="text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium flex items-center cursor-pointer"
+          >
+            Resume Templates
+          </a>
           <Link className="text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium flex items-center" to="/about-us" onClick={toggleMenu}>
             About Us
-          </Link>
-          <Link className="text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium flex items-center" to="/contact-us" onClick={toggleMenu}>
-            Contact
           </Link>
           
           {isSignedIn ? (

@@ -15,6 +15,7 @@ import ViewResume from './my-resume/[resumeId]/view/index.jsx'
 import Blog from './pages/Blog.jsx'
 import BlogPost from './pages/BlogPost.jsx'
 import ATSScoreResult from './dashboard/ats-score-result/index.jsx'
+import AboutUs from './about-us/index.jsx'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -71,6 +72,10 @@ const router = createBrowserRouter([
   {
     path:'/blog/:id',
     element:<BlogPost/>
+  },
+  {
+    path:'/about-us',
+    element:<AboutUs/>
   }
 ]);
 

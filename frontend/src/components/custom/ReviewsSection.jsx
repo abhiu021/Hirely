@@ -1,6 +1,8 @@
 import React, { useRef } from 'react';
 import { ChevronLeft, ChevronRight, Star, Quote } from 'lucide-react';
 import AnimatedSection, { AnimatedStagger } from '../ui/animated-section';
+import { Button } from '../ui/button';
+import { Link } from 'react-router-dom';
 
 const ReviewCard = ({ name, review, rating }) => (
   <div className="flex-shrink-0 w-[350px] bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 relative overflow-hidden group">
@@ -156,9 +158,14 @@ const ReviewsSection = () => {
         >
           <h3 className="text-2xl font-bold mb-4">Ready to create your perfect resume?</h3>
           <p className="mb-6 opacity-90">Join thousands of successful job seekers who have already advanced their careers with Hirely</p>
-          <button className="bg-white text-blue-600 hover:bg-blue-50 font-medium py-2 px-8 rounded-full transition-colors duration-300">
-            Get Started Now — It's Free
-          </button>
+          <Button 
+            asChild 
+            className="bg-white text-blue-600 hover:bg-blue-50 font-medium py-2 px-8 rounded-full transition-colors duration-300"
+          >
+            <Link to="/dashboard">
+              Get Started Now — It's Free
+            </Link>
+          </Button>
         </AnimatedSection>
       </div>
     </section>

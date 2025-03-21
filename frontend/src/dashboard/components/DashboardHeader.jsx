@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Link, useLocation } from 'react-router-dom';
 import { UserButton, useUser } from '@clerk/clerk-react';
-import { Menu, X, ChevronDown, Home, FileText } from 'lucide-react';
+import { Menu, X, Home } from 'lucide-react';
 import AnimatedSection from '@/components/ui/animated-section';
 
 const DashboardHeader = () => {
@@ -63,18 +63,6 @@ const DashboardHeader = () => {
               Dashboard
             </Link>
             
-            <Link 
-              className={`flex items-center text-sm font-medium ${
-                location.pathname.includes('/resume') 
-                  ? 'text-blue-600' 
-                  : 'text-gray-700 hover:text-blue-600'
-              } transition duration-200`} 
-              to="/dashboard"
-            >
-              <FileText className="w-4 h-4 mr-1" />
-              My Resumes
-            </Link>
-            
             <Link className="text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium" to="/blog">Blog</Link>
           </nav>
 
@@ -82,7 +70,7 @@ const DashboardHeader = () => {
           <div className="hidden md:flex items-center space-x-4">
             {isSignedIn ? (
               <div className="flex gap-3 items-center">
-                <Link className="text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium" to="/">Landing Page</Link>
+                <Link className="text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium" to="/">Home</Link>
                 <div className="h-5 w-px bg-gray-200"></div>
                 <UserButton afterSignOutUrl="/" />
               </div>
@@ -133,19 +121,6 @@ const DashboardHeader = () => {
             </Link>
             
             <Link 
-              className={`flex items-center py-2 px-3 rounded-md ${
-                location.pathname.includes('/resume') 
-                  ? 'bg-blue-50 text-blue-600' 
-                  : 'text-gray-700 hover:bg-gray-50'
-              }`}
-              to="/dashboard"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <FileText className="w-4 h-4 mr-2" />
-              My Resumes
-            </Link>
-            
-            <Link 
               className="py-2 px-3 text-gray-700 hover:bg-gray-50 rounded-md"
               to="/blog"
               onClick={() => setIsMenuOpen(false)}
@@ -158,7 +133,7 @@ const DashboardHeader = () => {
               to="/"
               onClick={() => setIsMenuOpen(false)}
             >
-              Landing Page
+              Home
             </Link>
             
             <div className="pt-2 border-t border-gray-100 flex justify-end">

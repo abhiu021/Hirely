@@ -5,15 +5,18 @@ import AnimatedSection, { AnimatedStagger } from '../ui/animated-section';
 import professionalTemplate from '../../assets/professional_template.jpg';
 import minimalAtsTemplate from '../../assets/minimal-ats_template.jpg';
 import modernTemplate from '../../assets/modern_template.jpg';
+import { Link } from 'react-router-dom';
 
 const TemplateCard = ({ image, name }) => (
   <div 
     className="group relative transition-all duration-300 transform hover:-translate-y-2"
   >
     <div className="absolute inset-0 bg-gradient-to-t from-blue-600/80 to-purple-600/80 opacity-0 group-hover:opacity-90 rounded-xl transition-opacity duration-300 flex items-center justify-center">
-      <Button variant="outline" size="sm" className="text-white border-white hover:bg-white/20 hover:text-white">
-        <FileTextIcon className="mr-2 h-4 w-4" />
-        Use Template
+      <Button variant="outline" size="sm" className="text-white border-white hover:bg-white/20 hover:text-white" asChild>
+        <Link to="/dashboard">
+          <FileTextIcon className="mr-2 h-4 w-4" />
+          Use Template
+        </Link>
       </Button>
     </div>
     <img
@@ -32,7 +35,7 @@ const ResumeBuilderSection = () => {
   ];
 
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section id="templates" className="py-24 relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 z-0 bg-gradient-to-t from-purple-50/50 to-transparent"></div>
       <div className="absolute top-1/4 left-0 w-64 h-64 bg-blue-200/20 rounded-full blur-3xl"></div>

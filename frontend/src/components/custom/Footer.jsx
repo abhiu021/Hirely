@@ -1,7 +1,6 @@
 import React from 'react';
-import { Button } from '../ui/button';
-import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin, Send, ChevronRight } from 'lucide-react';
-import AnimatedSection, { AnimatedStagger } from '../ui/animated-section';
+import { Facebook, Twitter, Instagram, Linkedin, ChevronRight } from 'lucide-react';
+import AnimatedSection from '../ui/animated-section';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -14,7 +13,7 @@ const Footer = () => {
       
       <div className="container mx-auto px-4 sm:px-6 py-12 md:py-16 relative z-10">
         {/* Top section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
           {/* Company Info */}
           <AnimatedSection animation="fade-up" delay={100}>
             <div>
@@ -48,8 +47,13 @@ const Footer = () => {
               <h3 className="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">Quick Links</h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="/about" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
-                    <ChevronRight size={14} className="mr-1" /> About Us
+                  <a href="/" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
+                    <ChevronRight size={14} className="mr-1" /> Home
+                  </a>
+                </li>
+                <li>
+                  <a href="/dashboard" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
+                    <ChevronRight size={14} className="mr-1" /> Dashboard
                   </a>
                 </li>
                 <li>
@@ -58,84 +62,22 @@ const Footer = () => {
                   </a>
                 </li>
                 <li>
-                  <a href="/templates" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
+                  <a href="/#templates" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
                     <ChevronRight size={14} className="mr-1" /> Resume Templates
                   </a>
                 </li>
                 <li>
-                  <a href="/pricing" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
-                    <ChevronRight size={14} className="mr-1" /> Pricing
-                  </a>
-                </li>
-                <li>
-                  <a href="/contact" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
-                    <ChevronRight size={14} className="mr-1" /> Contact Us
+                  <a href="/about-us" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
+                    <ChevronRight size={14} className="mr-1" /> About Us
                   </a>
                 </li>
               </ul>
-            </div>
-          </AnimatedSection>
-          
-          {/* Legal */}
-          <AnimatedSection animation="fade-up" delay={300}>
-            <div>
-              <h3 className="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">Legal</h3>
-              <ul className="space-y-2">
-                <li>
-                  <a href="/privacy" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
-                    <ChevronRight size={14} className="mr-1" /> Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="/terms" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
-                    <ChevronRight size={14} className="mr-1" /> Terms of Service
-                  </a>
-                </li>
-                <li>
-                  <a href="/cookies" className="text-gray-300 hover:text-blue-400 transition-colors duration-300 flex items-center">
-                    <ChevronRight size={14} className="mr-1" /> Cookie Policy
-                  </a>
-                </li>
-              </ul>
-              
-              {/* Contact Info */}
-              <h3 className="text-lg font-semibold mt-6 mb-4 border-b border-gray-700 pb-2">Contact Us</h3>
-              <ul className="space-y-2">
-                <li className="flex items-start">
-                  <Phone size={16} className="mr-2 mt-1 text-gray-400" />
-                  <span className="text-gray-300">(123) 456-7890</span>
-                </li>
-                <li className="flex items-start">
-                  <Mail size={16} className="mr-2 mt-1 text-gray-400" />
-                  <a href="mailto:info@hirely.com" className="text-gray-300 hover:text-blue-400 transition-colors duration-300">info@hirely.com</a>
-                </li>
-              </ul>
-            </div>
-          </AnimatedSection>
-          
-          {/* Newsletter */}
-          <AnimatedSection animation="fade-up" delay={400}>
-            <div>
-              <h3 className="text-lg font-semibold mb-4 border-b border-gray-700 pb-2">Subscribe to Newsletter</h3>
-              <p className="text-gray-300 mb-4">
-                Get the latest resume tips and career advice delivered to your inbox.
-              </p>
-              <div className="flex">
-                <input 
-                  type="email" 
-                  placeholder="Your email" 
-                  className="bg-gray-800 border border-gray-700 text-gray-300 px-4 py-2 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-                />
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-r-md rounded-l-none px-3">
-                  <Send size={16} />
-                </Button>
-              </div>
             </div>
           </AnimatedSection>
         </div>
         
         {/* Bottom section */}
-        <AnimatedSection animation="fade-up" delay={500} className="pt-6 border-t border-gray-700 text-center sm:flex sm:justify-between sm:text-left">
+        <AnimatedSection animation="fade-up" delay={300} className="pt-6 border-t border-gray-700 text-center sm:flex sm:justify-between sm:text-left">
           <p className="text-gray-400 text-sm">
             © {currentYear} Hirely. All rights reserved.
           </p>
