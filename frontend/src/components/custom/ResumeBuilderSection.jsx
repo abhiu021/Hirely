@@ -2,8 +2,11 @@ import React from 'react';
 import { Button } from '../ui/button';
 import { FileTextIcon } from 'lucide-react';
 import AnimatedSection, { AnimatedStagger } from '../ui/animated-section';
+import professionalTemplate from '../../assets/professional_template.jpg';
+import minimalAtsTemplate from '../../assets/minimal-ats_template.jpg';
+import modernTemplate from '../../assets/modern_template.jpg';
 
-const TemplateCard = ({ template }) => (
+const TemplateCard = ({ image, name }) => (
   <div 
     className="group relative transition-all duration-300 transform hover:-translate-y-2"
   >
@@ -14,14 +17,20 @@ const TemplateCard = ({ template }) => (
       </Button>
     </div>
     <img
-      src={`https://storage.googleapis.com/a1aa/image/template${template}.jpg`}
-      alt={`Template ${template}`}
+      src={image}
+      alt={`${name} Template`}
       className="w-full aspect-[3/4] object-cover rounded-xl shadow-lg"
     />
   </div>
 );
 
 const ResumeBuilderSection = () => {
+  const templates = [
+    { id: 1, image: professionalTemplate, name: "Professional" },
+    { id: 2, image: modernTemplate, name: "Modern" },
+    { id: 3, image: minimalAtsTemplate, name: "Minimal ATS" }
+  ];
+
   return (
     <section className="py-24 relative overflow-hidden">
       {/* Decorative background elements */}
@@ -46,7 +55,7 @@ const ResumeBuilderSection = () => {
           
           <AnimatedSection animation="fade-up" delay={500}>
             <p className="text-gray-600 text-base sm:text-lg max-w-3xl mx-auto">
-              Explore our extensive library of templates for inspiration. Start building your impressive resume today!
+              Choose from our professional templates and start building your impressive resume today!
             </p>
           </AnimatedSection>
         </div>
@@ -54,22 +63,15 @@ const ResumeBuilderSection = () => {
         <div className="relative">
           {/* Resume Template Cards */}
           <AnimatedStagger
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto"
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-4xl mx-auto"
             animation="zoom-in"
             baseDelay={700}
             staggerDelay={150}
           >
-            {[1, 2, 3, 4].map((template) => (
-              <TemplateCard key={template} template={template} />
+            {templates.map((template) => (
+              <TemplateCard key={template.id} image={template.image} name={template.name} />
             ))}
           </AnimatedStagger>
-          
-          {/* View more button */}
-          <AnimatedSection animation="fade-up" delay={1300} className="mt-12 text-center">
-            <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-2 px-8 rounded-full">
-              Browse All Templates
-            </Button>
-          </AnimatedSection>
         </div>
       </div>
     </section>

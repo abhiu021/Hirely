@@ -32,28 +32,30 @@ function EditResume() {
     return (
         <DashboardLayout>
             <ResumeInfoContext.Provider value={{resumeInfo, setResumeInfo}}>
-                <div className='min-h-screen bg-gradient-to-b from-white to-gray-50 pt-24'>
-                    <div className="container mx-auto px-4 sm:px-6 py-8">
-                        <AnimatedSection animation="fade-up" delay={100} className="mb-6">
+                <div className='min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 pt-32 pb-12'>
+                    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                        <AnimatedSection animation="fade-up" delay={100} className="mb-8">
                             <h1 className='text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600'>Resume Builder</h1>
                             <p className="text-gray-600 mt-2">Create a professional resume that stands out</p>
                         </AnimatedSection>
 
                         {loading ? (
-                            <div className="flex items-center justify-center h-64">
+                            <AnimatedSection animation="fade-up" delay={200} className="flex items-center justify-center h-64 bg-white/50 backdrop-blur-sm rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100">
                                 <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
-                                <span className="ml-2 text-gray-600">Loading your resume...</span>
-                            </div>
+                                <span className="ml-3 text-gray-600 font-medium">Loading your resume...</span>
+                            </AnimatedSection>
                         ) : (
-                            <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
+                            <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
                                 <AnimatedSection animation="fade-right" delay={200} className="h-full">
-                                    <div className="bg-white p-6 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100">
+                                    <div className="bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.09)] transition-all duration-300">
+                                        <h2 className="text-lg font-semibold text-gray-800 mb-4">Resume Details</h2>
                                         <FormSection />
                                     </div>
                                 </AnimatedSection>
                                 
                                 <AnimatedSection animation="fade-left" delay={300} className="h-full">
-                                    <div className="bg-white p-6 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 sticky top-24">
+                                    <div className="bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.09)] transition-all duration-300 sticky top-32">
+                                        <h2 className="text-lg font-semibold text-gray-800 mb-4">Preview</h2>
                                         <ResumePreview />
                                     </div>
                                 </AnimatedSection>

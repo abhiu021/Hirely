@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { UserButton, useUser } from '@clerk/clerk-react';
 import { RocketIcon, RefreshCcwIcon } from 'lucide-react';
 import AnimatedSection from '../ui/animated-section';
+import previewImage from '../../assets/preview.jpg.jpg';
 
 const Intropart = () => {
     const { isSignedIn } = useUser();
@@ -66,19 +67,22 @@ const Intropart = () => {
                         </AnimatedSection>
                     </div>
                     
-                    {/* Right content - Illustration/mockup */}
+                    {/* Right content - Resume Preview Image */}
                     <AnimatedSection animation="fade-left" delay={400} className="flex-1 hidden md:block">
-                        <div className="relative w-full h-[400px] bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl shadow-xl">
-                            <div className="absolute top-4 left-4 right-4 h-10 bg-white/80 rounded-t-lg backdrop-blur-sm flex items-center px-4">
+                        <div className="relative w-full h-[400px] rounded-xl shadow-xl overflow-hidden">
+                            <div className="absolute top-0 left-0 right-0 h-10 bg-white/80 backdrop-blur-sm flex items-center px-4 z-10">
                                 <div className="flex space-x-2">
                                     <div className="w-3 h-3 rounded-full bg-red-500"></div>
                                     <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                                     <div className="w-3 h-3 rounded-full bg-green-500"></div>
                                 </div>
                             </div>
-                            <div className="absolute top-14 left-4 right-4 bottom-4 bg-white/30 backdrop-blur-sm rounded-b-lg flex items-center justify-center">
-                                <p className="text-lg font-medium text-gray-600">Resume Builder Preview</p>
-                            </div>
+                            <img 
+                                src={previewImage} 
+                                alt="Resume Builder Preview" 
+                                className="w-full h-full object-cover object-top"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-blue-600/20 to-transparent mix-blend-overlay"></div>
                         </div>
                     </AnimatedSection>
                 </div>

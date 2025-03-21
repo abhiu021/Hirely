@@ -15,10 +15,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Download } from "lucide-react";
+import { ChevronDown, Download, Share2 } from "lucide-react";
 import { useReactToPrint } from "react-to-print";
 // Import basic print styles
 import "./print.css";
+import AnimatedSection from "@/components/ui/animated-section";
 
 function ViewResume() {
   const [resumeInfo, setResumeInfo] = useState(null);
@@ -72,72 +73,80 @@ function ViewResume() {
 
   return (
     <ResumeInfoContext.Provider value={{ resumeInfo, setResumeInfo }}>
-      <div className="resume-view-container">
+      <div className="resume-view-container min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
         {/* Header section - will not be printed */}
         <div id="no-print">
           <Header />
 
-          <div className="my-10 mx-10 md:mx-20 lg:mx-36">
-            <h2 className="text-center text-2xl font-medium">
-              Congrats! Your Ultimate AI generates Resume is ready!
-            </h2>
-            <p className="text-center text-gray-400">
-              Now you are ready to download your resume and you can share a unique
-              resume URL with your friends and family.
-            </p>
-            <div className="flex justify-between items-center px-44 my-10">
-              <Button
-                onClick={handlePrint}
-                className="flex items-center gap-2"
-                disabled={!resumeInfo || loading}
-              >
-                <Download className="h-4 w-4" />
-                Download PDF
-              </Button>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-8">
+            <AnimatedSection animation="fade-up" delay={100}>
+              <h2 className="text-center text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+                Congratulations! Your Resume is Ready
+              </h2>
+              <p className="text-center text-gray-500 mt-2 max-w-2xl mx-auto">
+                Your AI-generated resume is ready for download. You can also share a unique
+                resume URL with anyone you like.
+              </p>
+            </AnimatedSection>
+            
+            <AnimatedSection animation="fade-up" delay={200} className="mt-8 mb-10">
+              <div className="flex flex-col md:flex-row justify-center items-center gap-4 max-w-lg mx-auto">
+                <Button
+                  onClick={handlePrint}
+                  className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-full w-full md:w-auto"
+                  disabled={!resumeInfo || loading}
+                >
+                  <Download className="h-4 w-4" />
+                  Download PDF
+                </Button>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="flex items-center gap-2">
-                    {templates[activeTemplate]}
-                    <ChevronDown className="h-4 w-4" />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="flex items-center gap-2 rounded-full border border-gray-200 w-full md:w-auto">
+                      {templates[activeTemplate]}
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    {Object.entries(templates).map(([key, value]) => (
+                      <DropdownMenuItem
+                        key={key}
+                        onClick={() => setActiveTemplate(key)}
+                      >
+                        {value}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <RWebShare
+                  data={{
+                    text: "Hello Everyone, This is my resume please open the URL to see it",
+                    url: `${
+                      import.meta.env.VITE_BASE_URL
+                    }/my-resume/${resumeId}/view`,
+                    title: `${resumeInfo?.personalDetails?.firstName || ''} ${resumeInfo?.personalDetails?.lastName || ''}'s resume`,
+                  }}
+                  onClick={() => console.log("shared successfully!")}
+                >
+                  <Button variant="outline" className="flex items-center gap-2 rounded-full border border-gray-200 w-full md:w-auto">
+                    <Share2 className="h-4 w-4" />
+                    Share Resume
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  {Object.entries(templates).map(([key, value]) => (
-                    <DropdownMenuItem
-                      key={key}
-                      onClick={() => setActiveTemplate(key)}
-                    >
-                      {value}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              <RWebShare
-                data={{
-                  text: "Hello Everyone, This is my resume please open the URL to see it",
-                  url: `${
-                    import.meta.env.VITE_BASE_URL
-                  }/my-resume/${resumeId}/view`,
-                  title: `${resumeInfo?.personalDetails?.firstName || ''} ${resumeInfo?.personalDetails?.lastName || ''}'s resume`,
-                }}
-                onClick={() => console.log("shared successfully!")}
-              >
-                <Button>Share</Button>
-              </RWebShare>
-            </div>
+                </RWebShare>
+              </div>
+            </AnimatedSection>
           </div>
         </div>
         
         {/* Regular preview for display */}
-        <div className="flex justify-center mt-8 mb-16">
+        <AnimatedSection animation="fade-up" delay={300} className="flex justify-center pb-16 px-4">
           {resumeInfo && (
-            <div className="preview-container">
+            <div className="preview-container max-w-4xl w-full">
               <ResumePreview template={activeTemplate} />
             </div>
           )}
-        </div>
+        </AnimatedSection>
         
         {/* Hidden printable component - this is what actually gets printed */}
         {resumeInfo && (
