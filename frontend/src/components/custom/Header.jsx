@@ -97,7 +97,7 @@ const Header = () => {
                 <Link to={'/auth/sign-in'} className="text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium">
                   Sign In
                 </Link>
-                <Link to={'/auth/sign-up'}>
+                <Link to={'/dashboard'}>
                   <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-xs px-3 py-1 h-8 rounded-full">
                     Get Started
                   </Button>
@@ -161,7 +161,7 @@ const Header = () => {
               <Link to={'/auth/sign-in'} className="text-gray-700 hover:text-blue-600 transition duration-200 text-sm font-medium" onClick={toggleMenu}>
                 Sign In
               </Link>
-              <Link to={'/auth/sign-up'} onClick={toggleMenu}>
+              <Link to={'/dashboard'} onClick={toggleMenu}>
                 <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white w-full rounded-full text-xs h-8">
                   Get Started
                 </Button>

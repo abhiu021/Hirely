@@ -6,8 +6,8 @@ import AnimatedSection from '../ui/animated-section';
 
 // Simplified blog posts data
 export const blogPosts = [
-  {
-    id: 1,
+  { 
+    id: 1, 
     title: "How to Create a Professional Resume",
     description: "Learn the essential steps to craft a standout resume that gets noticed by recruiters.",
     date: "June 15, 2023",
@@ -41,8 +41,8 @@ export const blogPosts = [
       <p>Errors on your resume can give a negative impression. Always proofread thoroughly before submitting.</p>
     `
   },
-  {
-    id: 2,
+  { 
+    id: 2, 
     title: "Top 5 Resume Mistakes to Avoid",
     description: "Don't let these common resume errors cost you job opportunities.",
     date: "May 28, 2023",
@@ -69,8 +69,8 @@ export const blogPosts = [
       <p>Outdated or irrelevant experience can distract from your qualifications. Keep your resume focused on information relevant to the position you're applying for.</p>
     `
   },
-  {
-    id: 3,
+  { 
+    id: 3, 
     title: "How to Write a Cover Letter That Gets Results",
     description: "Craft a compelling cover letter to complement your resume and boost your job search success.",
     date: "May 10, 2023",
@@ -177,7 +177,7 @@ const BlogList = () => {
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-700">
               Our Blog
-            </h1>
+          </h1>
             <p className="text-lg text-gray-600">
               Explore our latest articles with expert advice on resume building, job applications, and career development.
             </p>
