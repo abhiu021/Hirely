@@ -15,14 +15,9 @@ Hirely is a comprehensive resume builder and ATS (Applicant Tracking System) sco
 
 Hirely offers multiple resume templates to choose from:
 
-### Professional Template
-![Professional Template](frontend/src/assets/professional_template.jpg)
-
-### Modern Template
-![Modern Template](frontend/src/assets/modern_template.jpg)
-
-### Minimal ATS-Optimized Template
-![Minimal ATS Template](frontend/src/assets/minimal-ats_template.jpg)
+| Professional Template | Modern Template | Minimal ATS Template |
+|:-------------------:|:---------------:|:--------------------:|
+| <img src="frontend/src/assets/professional_template.jpg" alt="Professional Template" width="250"/> | <img src="frontend/src/assets/modern_template.jpg" alt="Modern Template" width="250"/> | <img src="frontend/src/assets/minimal-ats_template.jpg" alt="Minimal ATS Template" width="250"/> |
 
 ## Tech Stack
 
