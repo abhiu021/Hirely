@@ -73,7 +73,7 @@ function ResumePreview({ template = "modern" }) {
 
   return (
     <div
-      className="a4 shadow-lg p-14 border-t-[20px]"
+      className="shadow-lg h-full p-14  "
       style={{ borderColor: resumeInfo?.themeColor }}
     >
       {renderTemplate()}
